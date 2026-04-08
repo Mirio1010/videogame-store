@@ -1,8 +1,8 @@
 # Video Game Store
 
-A full-stack e-commerce web application for buying physical video games.
+A full-stack e-commerce web application for buying physical video games, built for CISC 3140 as a group project.
 
-This project is being built for CISC 3140 as a group project. The goal is to create a video game store where users can browse products, view details, create accounts, log in, manage a shopping cart, and complete a simulated checkout experience.
+Users can browse products, view details, create accounts, log in, manage a shopping cart, and complete a simulated checkout experience.
 
 ## Tech Stack
 
@@ -22,38 +22,34 @@ This project is being built for CISC 3140 as a group project. The goal is to cre
 
 ## Project Goal
 
-The purpose of this project is to build a full-stack e-commerce website using vertical slices across the frontend, backend, and database.
-
-Instead of splitting the work only by frontend or backend, the team will build complete features that move through the whole stack.
+The goal is to build a full-stack e-commerce website using **vertical slices** across the frontend, backend, and database — meaning each feature moves through the entire stack rather than splitting work purely by frontend or backend.
 
 Examples of features include:
-- product listing
-- product details
-- authentication
-- shopping cart
-- checkout
-- admin product management
+- Product listing
+- Product details
+- Authentication
+- Shopping cart
+- Checkout
+- Admin product management
 
 ---
 
 ## MVP
 
-Our MVP is a video game e-commerce website where users can:
+### Users can:
+- Browse physical video games
+- View product details
+- Create an account
+- Log in and log out
+- Add games to a cart
+- Update cart quantity
+- Remove games from the cart
+- Complete a simulated checkout
 
-- browse physical video games
-- view product details
-- create an account
-- log in and log out
-- add games to a cart
-- update cart quantity
-- remove games from the cart
-- complete a simulated checkout
-
-Admins will be able to:
-
-- add products
-- edit products
-- delete products
+### Admins can:
+- Add products
+- Edit products
+- Delete products
 
 ---
 
@@ -61,67 +57,80 @@ Admins will be able to:
 
 ### Prerequisites
 
-Before you begin, make sure you have the following installed on your computer:
+Make sure you have the following installed:
 
 - [Node.js](https://nodejs.org/) (v18 or higher recommended)
 - [Git](https://git-scm.com/)
 
-You can verify your installations by running:
+Verify your installations:
 ```bash
 node -v
 git --version
 ```
 
----
-
 ### Cloning the Repository
 
-1. Open your terminal (Mac/Linux) or Git Bash (Windows)
-2. Navigate to the folder where you want the project to live
-3. Run the following command:
 ```bash
 git clone https://github.com/Mirio1010/videogame-store.git
-```
-
-4. Move into the project folder:
-```bash
 cd videogame-store
 ```
 
----
-
 ### Installing Dependencies
 
-This project uses **React + Vite**. If you've never used React before, don't worry — you won't need to understand all of it right away. Just follow these steps to get it running locally.
-
-Install all required packages by running:
+Install frontend dependencies:
 ```bash
+cd frontend
+npm install
+```
+
+Install backend dependencies (open a new terminal):
+```bash
+cd backend
 npm install
 ```
 
 ---
 
-### Running the App Locally
+## Running the Project
 
-To start the development server:
+You need to run the frontend and backend separately.
+
+**Frontend** — from the `frontend` folder:
 ```bash
 npm run dev
 ```
 
-Once it's running, open your browser and go to:
-```
-http://localhost:5173
+**Backend** — from the `backend` folder:
+```bash
+npm run dev
 ```
 
-You should see the app running. Any changes you save to the code will automatically refresh in the browser.
+Each folder has its own `package.json` and `node_modules`.
 
 ---
 
-### Contributing — How to Submit Your Work
+## Project Structure
 
-We use **Pull Requests (PRs)** to review and merge each other's work. Please do **not** push directly to `main`.
+```
+videogame-store/
+├── frontend/
+│   ├── public/           # Static assets
+│   └── src/
+│       ├── components/   # Reusable UI pieces (buttons, cards, etc.)
+│       ├── pages/        # Full page views (Home, Product, Cart, etc.)
+│       ├── App.jsx       # Root component and routing
+│       └── main.jsx      # Entry point
+├── backend/
+└── README.md
+```
 
-Here's the workflow to follow every time you work on something:
+> **New to React?** Check out the [official React docs](https://react.dev/learn). Focus on components, props, and state — those three concepts cover most of what you'll need for this project.
+
+---
+
+## Contributing — How to Submit Your Work
+
+We use **Pull Requests (PRs)** to review and merge work. Please do **not** push directly to `main`.
 
 **1. Make sure your local `main` is up to date**
 ```bash
@@ -130,13 +139,12 @@ git pull origin main
 ```
 
 **2. Create a new branch for your feature**
-
-Name it something descriptive, like `feature/product-listing` or `fix/cart-bug`:
 ```bash
 git checkout -b feature/your-feature-name
 ```
+Name it something descriptive, like `feature/product-listing` or `fix/cart-bug`.
 
-**3. Make your changes, then stage and commit them**
+**3. Stage and commit your changes**
 ```bash
 git add .
 git commit -m "Brief description of what you did"
@@ -148,26 +156,9 @@ git push origin feature/your-feature-name
 ```
 
 **5. Open a Pull Request**
-
-- Go to the repo on GitHub: https://github.com/Mirio1010/videogame-store
+- Go to the repo: https://github.com/Mirio1010/videogame-store
 - Click **"Compare & pull request"**
 - Add a short description of what your PR does
 - Request a teammate to review it before merging
-
----
-
-### Project Structure (Quick Overview)
-```
-videogame-store/
-├── public/           # Static assets
-├── src/
-│   ├── components/   # Reusable UI pieces (buttons, cards, etc.)
-│   ├── pages/        # Full page views (Home, Product, Cart, etc.)
-│   ├── App.jsx       # Root component and routing
-│   └── main.jsx      # Entry point — this is what loads the app
-├── index.html
-├── vite.config.js
-└── package.json
-```
 
 > **New to React?** A good starting point is the [official React docs](https://react.dev/learn). Focus on components, props, and state — those three concepts cover most of what you'll need for this project.
