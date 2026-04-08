@@ -1,12 +1,9 @@
 import Header from "./components/Header.jsx";
-
+import AppRoutes from './routes/AppRoutes.jsx';
 const App = () => {
   return (
     <>
-      <Header />
-      <main>
-        <div>This is where the main content will go</div>
-      </main>
+      <AppRoutes/>
     </>
   )
 }
