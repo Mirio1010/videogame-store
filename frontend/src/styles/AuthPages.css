@@ -1,0 +1,210 @@
+/* Auth Pages Styles (Login & Register) */
+
+.auth-page {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+}
+
+.auth-container {
+    display: flex;
+    gap: var(--spacing-2xl);
+    max-width: 900px;
+    width: 100%;
+}
+
+/* Auth Card */
+.auth-card {
+    flex: 1;
+    background: var(--color-bg-medium);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    border: 1px solid var(--color-bg-light);
+}
+
+/* Header */
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.auth-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+    margin-bottom: var(--spacing-lg);
+}
+
+.auth-logo .logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary);
+    color: var(--color-bg-dark);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.auth-logo .logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-white);
+}
+
+.auth-title {
+    font-size: 1.75rem;
+    color: var(--color-text-white);
+    margin-bottom: var(--spacing-sm);
+}
+
+.auth-subtitle {
+    color: var(--color-text-secondary);
+}
+
+/* Error */
+.auth-error {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid var(--color-error);
+    border-radius: var(--radius-sm);
+    color: var(--color-error);
+    margin-bottom: var(--spacing-lg);
+}
+
+.auth-error svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* Form */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.form-label {
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.form-input {
+    padding: var(--spacing-md);
+    background: var(--color-bg-darkest);
+    border: 1px solid var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    transition: border-color var(--transition-fast);
+}
+
+.form-input::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.form-input:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+/* Footer */
+.auth-footer {
+    margin-top: var(--spacing-xl);
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.auth-link {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+/* Side Info */
+.auth-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--spacing-xl);
+}
+
+.auth-info h2 {
+    font-size: 1.5rem;
+    color: var(--color-text-white);
+    margin-bottom: var(--spacing-xl);
+}
+
+.auth-features {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.auth-features li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    color: var(--color-text-secondary);
+}
+
+.auth-features svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-container {
+        flex-direction: column;
+    }
+
+    .auth-info {
+        display: none;
+    }
+
+    .auth-card {
+        padding: var(--spacing-xl);
+    }
+}
+
+/* Animations */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
