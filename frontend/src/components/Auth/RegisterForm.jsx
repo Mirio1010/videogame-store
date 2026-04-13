@@ -54,3 +54,6 @@ const RegisterForm = ({ formData, onChange, onSubmit, loading }) => (
       Create Account
     </Button>
   </form>
+);
+
+export default RegisterForm;
