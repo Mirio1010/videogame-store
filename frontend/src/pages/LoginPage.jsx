@@ -48,7 +48,7 @@ function LoginPage() {
           <div className="auth-card">
             <div className="auth-header">
               <Link to="/" className="auth-logo">
-                <span className="logo-icon">PP</span>
+                
                 <span className="logo-text">Pixel Pit Stop</span>
               </Link>
               <h1 className="auth-title">Welcome Back</h1>

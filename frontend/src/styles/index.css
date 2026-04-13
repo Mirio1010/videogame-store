@@ -1,3 +1,11 @@
+/* Cart Icon */
+.cart-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
+}
 /* 
  * Global Styles - Pixel Pit Stop
  * Steam-inspired dark theme with blue accents
