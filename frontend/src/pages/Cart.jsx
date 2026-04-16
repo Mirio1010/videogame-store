@@ -1,9 +1,17 @@
+//added the add to cart 
+//added checkout page (doesn't show anything have a probelm with it)
+//cart is updated makes the items removed, updated, and added to cart
+//in the future will add a notifcation when a user clicks add to cart it will have a notifcation saying
+//"added game to cart"
 import { useEffect, useMemo, useState } from "react";
+//used useNavigate to navigate to the checkout page
+import { useNavigate } from "react-router-dom";
 
 const CART_STORAGE_KEY = "cart";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const rawCart = localStorage.getItem(CART_STORAGE_KEY);
@@ -44,6 +52,10 @@ const Cart = () => {
 
   const removeItem = (itemId) => {
     setCartItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+
+  const handleCheckout = () => {
+    navigate("/checkout");
   };
 
   return (
@@ -87,6 +99,18 @@ const Cart = () => {
             </article>
           ))}
           <h2>Total: ${totalPrice.toFixed(2)}</h2>
+          <button
+            type="button"
+            onClick={handleCheckout}
+            style={{
+              marginTop: "1rem",
+              padding: "0.75rem 1.25rem",
+              borderRadius: 6,
+              fontWeight: 600,
+            }}
+          >
+            Checkout
+          </button>
         </>
       )}
     </main>
