@@ -1,18 +1,70 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-const GameCard = ({ game }) => (
-  <div className="game-card">
-    <div className="game-card-image">
-      <img src={game.image} alt={game.title} />
-      {game.discount && (
-        <span className="discount-badge">-{game.discount}%</span>
-      )}
+const CART_STORAGE_KEY = "cart";
+
+const GameCard = ({ game }) => {
+  const addToCart = () => {
+    const rawCart = localStorage.getItem(CART_STORAGE_KEY);
+    let cartItems = [];
+
+    try {
+      cartItems = rawCart ? JSON.parse(rawCart) : [];
+    } catch (error) {
+      console.error("Error reading cart items:", error);
+    }
+
+    const existingItem = cartItems.find((item) => item.id === game.id);
+
+    if (existingItem) {
+      const updatedCart = cartItems.map((item) =>
+        item.id === game.id ? { ...item, quantity: item.quantity + 1 } : item
+      );
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(updatedCart));
+      return;
+    }
+
+    const newItem = {
+      id: game.id,
+      title: game.title,
+      price: game.price,
+      image: game.image,
+      quantity: 1,
+    };
+
+    localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify([...cartItems, newItem])
+    );
+  };
+
+  return (
+    <div className="game-card">
+      <Link
+        to={`/game/${game.id}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
+        <div className="game-card-image">
+          <img src={game.image} alt={game.title} />
+          {game.discount && (
+            <span className="discount-badge">-{game.discount}%</span>
+          )}
+        </div>
+        <div className="game-card-info">
+          <h3>{game.title}</h3>
+          <p className="game-card-price">${game.price}</p>
+        </div>
+      </Link>
+
+      <button
+        type="button"
+        onClick={addToCart}
+        style={{ marginTop: "0.75rem", width: "100%" }}
+      >
+        Add to cart
+      </button>
     </div>
-    <div className="game-card-info">
-      <h3>{game.title}</h3>
-      <p className="game-card-price">${game.price}</p>
-    </div>
-  </div>
-);
+  );
+};
 
 export default GameCard;
