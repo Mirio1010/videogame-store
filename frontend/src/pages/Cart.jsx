@@ -29,6 +29,8 @@ const Cart = () => {
 
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+    //updated cart when user adds something in the cart
+    window.dispatchEvent(new Event("cart-updated"));
   }, [cartItems]);
 
   const hasItems = cartItems.length > 0;

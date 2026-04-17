@@ -1,13 +1,46 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "./Button/Button";
 import "../styles/websiteLogo.css";
+
+const CART_STORAGE_KEY = "cart";
 
 const Header = () => {
   // Simulated auth state (replace with context or real auth later)
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [cartCount, setCartCount] = useState(0);
+
+  const getCartCount = () => {
+    const rawCart = localStorage.getItem(CART_STORAGE_KEY);
+    if (!rawCart) return 0;
+
+    try {
+      const parsed = JSON.parse(rawCart);
+      if (!Array.isArray(parsed)) return 0;
+      // Count unique items, not total quantity
+      return parsed.length;
+    } catch (error) {
+      console.error("Error reading cart count:", error);
+      return 0;
+    }
+  };
+
+  useEffect(() => {
+    const syncCartCount = () => {
+      setCartCount(getCartCount());
+    };
+
+    syncCartCount();
+    window.addEventListener("storage", syncCartCount);
+    window.addEventListener("cart-updated", syncCartCount);
+
+    return () => {
+      window.removeEventListener("storage", syncCartCount);
+      window.removeEventListener("cart-updated", syncCartCount);
+    };
+  }, []);
 
   const handleLogin = () => {
     navigate("/login");
@@ -86,8 +119,33 @@ const Header = () => {
         }}
       >
         <Button variant="secondary" onClick={handleCart}>
-          <span role="img" aria-label="cart">
+          <span
+            role="img"
+            aria-label="cart"
+            style={{ position: "relative", display: "inline-flex" }}
+          >
             <img src="/cart.png" alt="Cart" className="cart-icon" />
+            {cartCount > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: -8,
+                  right: -8,
+                  minWidth: 18,
+                  height: 18,
+                  padding: "0 5px",
+                  borderRadius: 999,
+                  background: "var(--color-error)",
+                  color: "white",
+                  fontSize: "0.7rem",
+                  fontWeight: 700,
+                  lineHeight: "18px",
+                  textAlign: "center",
+                }}
+              >
+                {cartCount}
+              </span>
+            )}
           </span>{" "}
           Cart
         </Button>
