@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useLocation,useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Button from "./Button/Button";
 import "../styles/websiteLogo.css";
@@ -9,6 +9,8 @@ const Header = () => {
   // Simulated auth state (replace with context or real auth later)
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const location=useLocation();
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [cartCount, setCartCount] = useState(0);
 
@@ -41,6 +43,12 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(()=>{
+    if(location.pathname==="/store"){
+      setSearch(searchParams.get("q") ?? "");
+    }
+  }, [location.pathname, searchParams]);
+
   const handleLogin = () => {
     navigate("/login");
   };
@@ -52,7 +60,14 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     // Implement search logic or navigation here
-    alert(`Searching for: ${search}`);
+    const trimmed=search.trim();
+    const params=new URLSearchParams();
+    if (location.pathname === "/store" && searchParams.get("onSale") === "true") {
+      params.set("onSale","true");
+    }
+    if(trimmed) params.set("q",trimmed);
+    const qs=params.toString();
+    navigate({ pathname: "/store", search: qs ? `?${qs}` : "" });
   };
 
   return (
