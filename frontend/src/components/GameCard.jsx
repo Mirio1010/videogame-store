@@ -1,9 +1,22 @@
-import React from "react";
+//added a notification where the user click on add to cart and it pops out "Added to cart"
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const CART_STORAGE_KEY = "cart";
 
 const GameCard = ({ game }) => {
+  const [showAddedMessage, setShowAddedMessage] = useState(false);
+
+  useEffect(() => {
+    if (!showAddedMessage) return undefined;
+
+    const timeoutId = setTimeout(() => {
+      setShowAddedMessage(false);
+    }, 1800);
+
+    return () => clearTimeout(timeoutId);
+  }, [showAddedMessage]);
+
   const addToCart = () => {
     const rawCart = localStorage.getItem(CART_STORAGE_KEY);
     let cartItems = [];
@@ -21,6 +34,8 @@ const GameCard = ({ game }) => {
         item.id === game.id ? { ...item, quantity: item.quantity + 1 } : item
       );
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(updatedCart));
+      window.dispatchEvent(new Event("cart-updated"));
+      setShowAddedMessage(true);
       return;
     }
 
@@ -36,6 +51,8 @@ const GameCard = ({ game }) => {
       CART_STORAGE_KEY,
       JSON.stringify([...cartItems, newItem])
     );
+    window.dispatchEvent(new Event("cart-updated"));
+    setShowAddedMessage(true);
   };
 
   return (
@@ -63,6 +80,19 @@ const GameCard = ({ game }) => {
       >
         Add to cart
       </button>
+      {showAddedMessage && (
+        <p
+          style={{
+            marginTop: "0.5rem",
+            marginBottom: 0,
+            color: "#00ff00",
+            fontSize: "0.9rem",
+            fontWeight: 600,
+          }}
+        >
+          Added to cart!
+        </p>
+      )}
     </div>
   );
 };
