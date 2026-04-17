@@ -19,7 +19,8 @@ const Header = () => {
     try {
       const parsed = JSON.parse(rawCart);
       if (!Array.isArray(parsed)) return 0;
-      return parsed.reduce((sum, item) => sum + (item.quantity || 0), 0);
+      // Count unique items, not total quantity
+      return parsed.length;
     } catch (error) {
       console.error("Error reading cart count:", error);
       return 0;
