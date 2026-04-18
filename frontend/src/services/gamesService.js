@@ -23,6 +23,20 @@ export async function fetchAllGames({ featured, onSale } = {}) {
 }
 
 /**
+ * Fetch all categories (genres) derived from the curated game catalog.
+ *
+ * @returns {Promise<Array>}
+ */
+export async function fetchAllCategories() {
+  const res = await fetch(`${API_BASE}/api/categories`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch categories (${res.status})`);
+  }
+  const data = await res.json();
+  return data.categories;
+}
+
+/**
  * Fetch a single game by its Steam App ID.
  *
  * @param {number} steamId

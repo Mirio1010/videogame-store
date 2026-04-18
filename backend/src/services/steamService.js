@@ -68,6 +68,11 @@ function normalizeGame(steamId, data) {
     metacritic: data.metacritic?.score ?? null,
     reviews: data.recommendations?.total ?? null,
 
+    // Up to 8 full-resolution screenshots for the detail page
+    screenshots: (data.screenshots ?? [])
+      .slice(0, 8)
+      .map((s) => ({ thumbnail: s.path_thumbnail, full: s.path_full })),
+
     isFree: data.is_free ?? false,
 
     // Prices in USD dollars (not cents)

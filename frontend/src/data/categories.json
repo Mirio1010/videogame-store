@@ -1,6 +1,0 @@
-[
-  { "id": 1, "name": "Action", "slug": "action" },
-  { "id": 2, "name": "RPG", "slug": "rpg" },
-  { "id": 3, "name": "Strategy", "slug": "strategy" },
-  { "id": 4, "name": "Indie", "slug": "indie" }
-]

@@ -6,16 +6,19 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
 import GameCard from "../components/GameCard";
-import categories from "../data/categories.json";
-import { fetchAllGames } from "../services/gamesService";
+import { fetchAllGames, fetchAllCategories } from "../services/gamesService";
 
 const Home = () => {
   const [allGames, setAllGames] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAllGames()
-      .then(setAllGames)
+    Promise.all([fetchAllGames(), fetchAllCategories()])
+      .then(([games, cats]) => {
+        setAllGames(games);
+        setCategories(cats);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
