@@ -1,5 +1,17 @@
 # Changelog — feature/steamAPI
 
+---
+
+## TL;DR
+
+- **Replaced all static JSON game data** (`featuredGames.json`, `onSaleGames.json`, `categories.json`) with live data from the free public Steam Store API — no API key needed.
+- **Backend** gained two new routes (`/api/games`, `/api/categories`) backed by a `steamService` that fetches, normalizes, and caches Steam data for 1 hour.
+- **Frontend** gained a `gamesService` module and a full **game detail page** (`/game/:steamId`) showing the hero banner, live price, discount badge, Add to Cart, Metacritic score, review count, description, feature tags, and a screenshot gallery.
+- **`Home.jsx`** and **`Store.jsx`** now fetch from the backend instead of importing local JSON; loading and error states were added.
+- **Port changed from 5000 → 3001** to avoid a macOS AirPlay Receiver conflict that caused misleading CORS 403 errors.
+
+---
+
 ## Summary
 
 Replaced all static local JSON game data with live data fetched from the
