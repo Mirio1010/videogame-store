@@ -1,38 +1,47 @@
 import CTASection from "../components/CTASection";
 import HeroSection from "../components/HeroSection";
 import CategoryCard from "../components/CategoryCard";
-("use client");
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "../Styles/HomePage.css";
+import "../styles/HomePage.css";
 import GameCard from "../components/GameCard";
-
-
-/**
- * HomePage Component
- * * The main landing page featuring hero section, featured games,
- * categories, and special offers.
- */
-
-  // Mock Data: Featured games for the top shelf
-import featuredGames from "../data/featuredGames.json"
-
-// Mock Data: Games currently on sale
-import onSaleGames from "../data/onSaleGames.json"
-
-// Mock Data: Game categories
-import categories from "../data/categories.json";
+import { fetchAllGames, fetchAllCategories } from "../services/gamesService";
 
 const Home = () => {
+  const [allGames, setAllGames] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([fetchAllGames(), fetchAllCategories()])
+      .then(([games, cats]) => {
+        setAllGames(games);
+        setCategories(cats);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const featuredGames = allGames.filter((g) => g.featured);
+  const onSaleGames = allGames.filter((g) => g.onSale);
 
   return (
     <div className="home-page">
       {/* Hero Section: Main spotlight with Call to Action */}
       <HeroSection />
 
+      {/* Loading state */}
+      {loading && (
+        <section className="section">
+          <div className="container">
+            <p style={{ color: "var(--color-text-secondary)" }}>Loading games…</p>
+          </div>
+        </section>
+      )}
+
       {/* Featured Games Section: Displaying top picks */}
-      {featuredGames.length > 0 && (
+      {!loading && featuredGames.length > 0 && (
         <section className="section">
           <div className="container">
             <div className="section-header">
@@ -67,7 +76,7 @@ const Home = () => {
       )}
 
       {/* Special Offers Section: Showcasing discounted titles */}
-      {onSaleGames.length > 0 && (
+      {!loading && onSaleGames.length > 0 && (
         <section className="section sale-section">
           <div className="container">
             <div className="section-header">

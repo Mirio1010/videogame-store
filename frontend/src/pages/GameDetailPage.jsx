@@ -1,0 +1,184 @@
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { fetchGameById } from "../services/gamesService";
+import "../styles/GameDetailPage.css";
+
+const CART_STORAGE_KEY = "cart";
+
+function addToCart(game) {
+  let cart = [];
+  try { cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) ?? "[]"); }
+  catch { cart = []; }
+  const existing = cart.find((i) => i.id === game.id);
+  if (existing) {
+    cart = cart.map((i) => i.id === game.id ? { ...i, quantity: i.quantity + 1 } : i);
+  } else {
+    cart = [...cart, { id: game.id, title: game.title, price: game.price, image: game.image, quantity: 1 }];
+  }
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  window.dispatchEvent(new Event("cart-updated"));
+}
+
+export default function GameDetailPage() {
+  const { steamId } = useParams();
+  const navigate = useNavigate();
+  const [game, setGame] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeShot, setActiveShot] = useState(0);
+  const [addedMsg, setAddedMsg] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    fetchGameById(Number(steamId))
+      .then(setGame)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [steamId]);
+
+  const handleAddToCart = () => {
+    addToCart(game);
+    setAddedMsg(true);
+    setTimeout(() => setAddedMsg(false), 1800);
+  };
+
+  if (loading) return <div className="gdp-state">Loading game details…</div>;
+  if (error)   return <div className="gdp-state gdp-error">Error: {error}</div>;
+  if (!game)   return <div className="gdp-state">Game not found.</div>;
+
+  const hasDiscount = game.discount > 0;
+
+  return (
+    <div className="gdp-root">
+      {/* ── Hero banner ── */}
+      {game.headerImage && (
+        <div className="gdp-hero" style={{ backgroundImage: `url(${game.headerImage})` }}>
+          <div className="gdp-hero-overlay" />
+        </div>
+      )}
+
+      <div className="gdp-body">
+        {/* ── Back link ── */}
+        <button className="gdp-back" onClick={() => navigate(-1)}>← Back</button>
+
+        <div className="gdp-layout">
+          {/* ── Left column ── */}
+          <aside className="gdp-aside">
+            <img className="gdp-cover" src={game.image} alt={game.title} />
+
+            {/* Price / Add to cart */}
+            <div className="gdp-purchase">
+              {game.isFree ? (
+                <span className="gdp-free">Free to Play</span>
+              ) : (
+                <div className="gdp-price-row">
+                  {hasDiscount && (
+                    <span className="gdp-discount-badge">-{game.discount}%</span>
+                  )}
+                  <div className="gdp-prices">
+                    {hasDiscount && (
+                      <span className="gdp-original">${game.originalPrice.toFixed(2)}</span>
+                    )}
+                    <span className="gdp-final">${game.price.toFixed(2)}</span>
+                  </div>
+                </div>
+              )}
+              <button className="gdp-add-btn" onClick={handleAddToCart}>
+                Add to Cart
+              </button>
+              {addedMsg && <p className="gdp-added">Added to cart!</p>}
+            </div>
+
+            {/* Meta info */}
+            <dl className="gdp-meta">
+              {game.developers.length > 0 && (
+                <>
+                  <dt>Developer</dt>
+                  <dd>{game.developers.join(", ")}</dd>
+                </>
+              )}
+              {game.publishers.length > 0 && (
+                <>
+                  <dt>Publisher</dt>
+                  <dd>{game.publishers.join(", ")}</dd>
+                </>
+              )}
+              {game.releaseDate && (
+                <>
+                  <dt>Release Date</dt>
+                  <dd>{game.releaseDate}</dd>
+                </>
+              )}
+              {game.genres.length > 0 && (
+                <>
+                  <dt>Genres</dt>
+                  <dd>{game.genres.join(", ")}</dd>
+                </>
+              )}
+            </dl>
+          </aside>
+
+          {/* ── Right column ── */}
+          <main className="gdp-main">
+            <h1 className="gdp-title">{game.title}</h1>
+
+            {/* Review scores */}
+            <div className="gdp-scores">
+              {game.metacritic != null && (
+                <div className="gdp-score-card gdp-metacritic">
+                  <span className="gdp-score-num">{game.metacritic}</span>
+                  <span className="gdp-score-label">Metacritic</span>
+                </div>
+              )}
+              {game.reviews != null && (
+                <div className="gdp-score-card gdp-reviews">
+                  <span className="gdp-score-num">{game.reviews.toLocaleString()}</span>
+                  <span className="gdp-score-label">Steam Reviews</span>
+                </div>
+              )}
+            </div>
+
+            {/* Description */}
+            {game.description && (
+              <p className="gdp-description">{game.description}</p>
+            )}
+
+            {/* Steam feature tags */}
+            {game.categories.length > 0 && (
+              <div className="gdp-tags">
+                {game.categories.slice(0, 8).map((cat) => (
+                  <span key={cat} className="gdp-tag">{cat}</span>
+                ))}
+              </div>
+            )}
+
+            {/* Screenshots */}
+            {game.screenshots?.length > 0 && (
+              <div className="gdp-screenshots">
+                <h2 className="gdp-section-title">Screenshots</h2>
+                <div className="gdp-shot-main">
+                  <img
+                    src={game.screenshots[activeShot].full}
+                    alt={`Screenshot ${activeShot + 1}`}
+                  />
+                </div>
+                <div className="gdp-thumbs">
+                  {game.screenshots.map((shot, i) => (
+                    <button
+                      key={i}
+                      className={`gdp-thumb${i === activeShot ? " gdp-thumb-active" : ""}`}
+                      onClick={() => setActiveShot(i)}
+                    >
+                      <img src={shot.thumbnail} alt={`Thumb ${i + 1}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+}
