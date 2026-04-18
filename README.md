@@ -83,6 +83,14 @@ cd frontend
 npm install
 ```
 
+### Set up API URL for Frontend
+
+Before running the frontend server, create a file called `.env` inside the `frontend` folder with the following content:
+
+```
+VITE_API_URL=http://localhost:3001
+```
+
 Install backend dependencies (open a new terminal):
 ```bash
 cd backend
