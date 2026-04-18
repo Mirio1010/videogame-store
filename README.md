@@ -7,15 +7,18 @@ Users can browse products, view details, create accounts, log in, manage a shopp
 ## Tech Stack
 
 ### Frontend
+
 - React
 - Vite
 - CSS
 
 ### Backend
+
 - Node.js
 - Express
 
 ### Database
+
 - To be decided / added during backend setup
 
 ---
@@ -25,6 +28,7 @@ Users can browse products, view details, create accounts, log in, manage a shopp
 The goal is to build a full-stack e-commerce website using **vertical slices** across the frontend, backend, and database — meaning each feature moves through the entire stack rather than splitting work purely by frontend or backend.
 
 Examples of features include:
+
 - Product listing
 - Product details
 - Authentication
@@ -37,6 +41,7 @@ Examples of features include:
 ## MVP
 
 ### Users can:
+
 - Browse physical video games
 - View product details
 - Create an account
@@ -47,6 +52,7 @@ Examples of features include:
 - Complete a simulated checkout
 
 ### Admins can:
+
 - Add products
 - Edit products
 - Delete products
@@ -63,6 +69,7 @@ Make sure you have the following installed:
 - [Git](https://git-scm.com/)
 
 Verify your installations:
+
 ```bash
 node -v
 git --version
@@ -78,6 +85,7 @@ cd videogame-store
 ### Installing Dependencies
 
 Install frontend dependencies:
+
 ```bash
 cd frontend
 npm install
@@ -91,7 +99,16 @@ Before running the frontend server, create a file called `.env` inside the `fron
 VITE_API_URL=http://localhost:3001
 ```
 
+### Set up Backend Port
+
+Before running the backend server, create a file called `.env` inside the `backend` folder with the following content:
+
+```
+PORT=3001
+```
+
 Install backend dependencies (open a new terminal):
+
 ```bash
 cd backend
 npm install
@@ -104,11 +121,13 @@ npm install
 You need to run the frontend and backend separately.
 
 **Frontend** — from the `frontend` folder:
+
 ```bash
 npm run dev
 ```
 
 **Backend** — from the `backend` folder:
+
 ```bash
 npm run dev
 ```
@@ -141,29 +160,35 @@ videogame-store/
 We use **Pull Requests (PRs)** to review and merge work. Please do **not** push directly to `main`.
 
 **1. Make sure your local `main` is up to date**
+
 ```bash
 git checkout main
 git pull origin main
 ```
 
 **2. Create a new branch for your feature**
+
 ```bash
 git checkout -b feature/your-feature-name
 ```
+
 Name it something descriptive, like `feature/product-listing` or `fix/cart-bug`.
 
 **3. Stage and commit your changes**
+
 ```bash
 git add .
 git commit -m "Brief description of what you did"
 ```
 
 **4. Push your branch to GitHub**
+
 ```bash
 git push origin feature/your-feature-name
 ```
 
 **5. Open a Pull Request**
+
 - Go to the repo: https://github.com/Mirio1010/videogame-store
 - Click **"Compare & pull request"**
 - Add a short description of what your PR does
