@@ -1,6 +1,6 @@
 // Base URL for the backend API.
 // Set VITE_API_URL in a .env file to override (e.g. for production).
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 
 /**
  * Fetch all games from the curated catalog.

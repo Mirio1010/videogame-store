@@ -10,10 +10,12 @@ import AuthHeader from "../components/Auth/AuthHeader";
 import AuthError from "../components/Auth/AuthError";
 import RegisterForm from "../components/Auth/RegisterForm";
 import AuthInfo from "../components/Auth/AuthInfo";
+import { useAuth } from "../context/AuthContext.jsx";
 import "../Styles/AuthPages.css";
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -33,15 +35,24 @@ function RegisterPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate registration (replace with real API later)
-    setTimeout(() => {
-      setLoading(false);
-      if (formData.name && formData.email && formData.password) {
-        navigate("/login");
-      } else {
-        setError("Please fill in all fields");
+    try {
+      const response = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (response.needsEmailConfirmation) {
+        setError("Account created. Please confirm your email, then sign in.");
+        return;
       }
-    }, 1000);
+
+      navigate("/");
+    } catch (registerError) {
+      setError(registerError.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

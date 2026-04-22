@@ -1,27 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchGameById } from "../services/gamesService";
+import { useAuth } from "../context/AuthContext.jsx";
+import { addGameToCart } from "../utils/cartStorage";
 import "../styles/GameDetailPage.css";
-
-const CART_STORAGE_KEY = "cart";
-
-function addToCart(game) {
-  let cart = [];
-  try { cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) ?? "[]"); }
-  catch { cart = []; }
-  const existing = cart.find((i) => i.id === game.id);
-  if (existing) {
-    cart = cart.map((i) => i.id === game.id ? { ...i, quantity: i.quantity + 1 } : i);
-  } else {
-    cart = [...cart, { id: game.id, title: game.title, price: game.price, image: game.image, quantity: 1 }];
-  }
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-  window.dispatchEvent(new Event("cart-updated"));
-}
 
 export default function GameDetailPage() {
   const { steamId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,7 +25,8 @@ export default function GameDetailPage() {
   }, [steamId]);
 
   const handleAddToCart = () => {
-    addToCart(game);
+    addGameToCart(user, game);
+    window.dispatchEvent(new Event("cart-updated"));
     setAddedMsg(true);
     setTimeout(() => setAddedMsg(false), 1800);
   };
