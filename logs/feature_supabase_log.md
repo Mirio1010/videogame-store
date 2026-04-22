@@ -8,6 +8,7 @@
 	- guest cart: `cart:guest`
 	- signed-in private cart: `cart:user:<userId>`
 - Fixed logout 400 error by making `refreshToken` optional on backend logout handling.
+- Fixed logout 500 + frontend unhandled rejection by hardening backend request-body access and frontend logout handlers.
 - Verified through repeated diagnostics checks and successful frontend build.
 
 ### /Backend/.env Environment Snapshot (Highlighted)
@@ -187,6 +188,43 @@ Global cart key (`cart`) caused guest and signed-in users to share/mix cart cont
 ### Result
 
 - Logout no longer fails with 400 due to missing refresh token.
+
+---
+
+## 8) Additional Logout Robustness Fix (500 + Unhandled Rejection)
+
+### Issue reported
+
+- Browser console showed:
+	- `Failed to load resource: ... 500 (Internal Server Error) (logout)`
+	- `Unhandled Promise Rejection: Cannot read properties of undefined (reading 'refreshToken')`
+
+### Root cause
+
+- Backend logout route accessed `req.body.refreshToken` directly, which can throw when `req.body` is undefined.
+- Header logout click path did not catch rejected logout promises, so failures surfaced as unhandled rejections.
+
+### Fixes
+
+- `backend/src/routes/auth.js`
+	- Hardened refresh token access:
+		- from `req.body.refreshToken`
+		- to `req.body?.refreshToken`
+
+- `frontend/src/services/authService.js`
+	- Hardened logout helper signature to avoid destructuring crash:
+		- from `logout({ accessToken, refreshToken })`
+		- to `logout({ accessToken, refreshToken } = {})`
+	- Added early return when `accessToken` is missing.
+
+- `frontend/src/components/Header.jsx`
+	- Wrapped logout click handler in `try/catch` to prevent unhandled promise rejections.
+
+### Result
+
+- Logout flow is more resilient to stale/malformed session payloads.
+- Console no longer reports unhandled promise rejection for this path.
+- Backend no longer throws on missing request body during logout.
 
 ---
 

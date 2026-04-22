@@ -44,7 +44,11 @@ export async function login({ email, password }) {
   });
 }
 
-export async function logout({ accessToken, refreshToken }) {
+export async function logout({ accessToken, refreshToken } = {}) {
+  if (!accessToken) {
+    return { success: true };
+  }
+
   return request("/api/auth/logout", {
     method: "POST",
     headers: {

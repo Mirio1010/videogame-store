@@ -68,7 +68,7 @@ router.post("/logout", authenticateRequest, async (req, res, next) => {
   try {
     await logoutUser({
       accessToken: req.auth.accessToken,
-      refreshToken: req.body.refreshToken,
+      refreshToken: req.body?.refreshToken,
     });
 
     res.json({
