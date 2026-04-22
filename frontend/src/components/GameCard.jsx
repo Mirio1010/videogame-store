@@ -1,10 +1,11 @@
 //added a notification where the user click on add to cart and it pops out "Added to cart"
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-const CART_STORAGE_KEY = "cart";
+import { useAuth } from "../context/AuthContext.jsx";
+import { addGameToCart } from "../utils/cartStorage";
 
 const GameCard = ({ game }) => {
+  const { user } = useAuth();
   const [showAddedMessage, setShowAddedMessage] = useState(false);
 
   useEffect(() => {
@@ -18,39 +19,7 @@ const GameCard = ({ game }) => {
   }, [showAddedMessage]);
 
   const addToCart = () => {
-    const rawCart = localStorage.getItem(CART_STORAGE_KEY);
-    let cartItems = [];
-
-    try {
-      cartItems = rawCart ? JSON.parse(rawCart) : [];
-    } catch (error) {
-      console.error("Error reading cart items:", error);
-    }
-
-    const existingItem = cartItems.find((item) => item.id === game.id);
-
-    if (existingItem) {
-      const updatedCart = cartItems.map((item) =>
-        item.id === game.id ? { ...item, quantity: item.quantity + 1 } : item
-      );
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(updatedCart));
-      window.dispatchEvent(new Event("cart-updated"));
-      setShowAddedMessage(true);
-      return;
-    }
-
-    const newItem = {
-      id: game.id,
-      title: game.title,
-      price: game.price,
-      image: game.image,
-      quantity: 1,
-    };
-
-    localStorage.setItem(
-      CART_STORAGE_KEY,
-      JSON.stringify([...cartItems, newItem])
-    );
+    addGameToCart(user, game);
     window.dispatchEvent(new Event("cart-updated"));
     setShowAddedMessage(true);
   };

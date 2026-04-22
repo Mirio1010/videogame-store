@@ -1,13 +1,12 @@
 import { Link, useNavigate,useLocation,useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Button from "./Button/Button";
+import { useAuth } from "../context/AuthContext.jsx";
+import { readCart } from "../utils/cartStorage";
 import "../styles/websiteLogo.css";
 
-const CART_STORAGE_KEY = "cart";
-
 const Header = () => {
-  // Simulated auth state (replace with context or real auth later)
-  const [user, setUser] = useState(null);
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location=useLocation();
   const [searchParams] = useSearchParams();
@@ -15,18 +14,8 @@ const Header = () => {
   const [cartCount, setCartCount] = useState(0);
 
   const getCartCount = () => {
-    const rawCart = localStorage.getItem(CART_STORAGE_KEY);
-    if (!rawCart) return 0;
-
-    try {
-      const parsed = JSON.parse(rawCart);
-      if (!Array.isArray(parsed)) return 0;
-      // Count unique items, not total quantity
-      return parsed.length;
-    } catch (error) {
-      console.error("Error reading cart count:", error);
-      return 0;
-    }
+    const cart = readCart(user);
+    return cart.length;
   };
 
   useEffect(() => {
@@ -42,7 +31,7 @@ const Header = () => {
       window.removeEventListener("storage", syncCartCount);
       window.removeEventListener("cart-updated", syncCartCount);
     };
-  }, []);
+  }, [user]);
 
   useEffect(()=>{
     if(location.pathname==="/store"){
@@ -52,6 +41,11 @@ const Header = () => {
 
   const handleLogin = () => {
     navigate("/login");
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
   const handleCart = () => {
@@ -164,10 +158,15 @@ const Header = () => {
           </span>{" "}
           Cart
         </Button>
-        {user ? (
-          <span style={{ color: "var(--color-text-primary)" }}>
-            {user.email}
-          </span>
+        {isAuthenticated ? (
+          <>
+            <span style={{ color: "var(--color-text-primary)" }}>
+              {user.email}
+            </span>
+            <Button variant="secondary" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
         ) : (
           <Button variant="primary" onClick={handleLogin}>
             Sign In
