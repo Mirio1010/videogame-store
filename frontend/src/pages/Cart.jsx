@@ -6,32 +6,23 @@
 import { useEffect, useMemo, useState } from "react";
 //used useNavigate to navigate to the checkout page
 import { useNavigate } from "react-router-dom";
-
-const CART_STORAGE_KEY = "cart";
+import { useAuth } from "../context/AuthContext.jsx";
+import { readCart, writeCart } from "../utils/cartStorage";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const rawCart = localStorage.getItem(CART_STORAGE_KEY);
-    if (!rawCart) return;
-
-    try {
-      const parsed = JSON.parse(rawCart);
-      if (Array.isArray(parsed)) {
-        setCartItems(parsed);
-      }
-    } catch (error) {
-      console.error("Error parsing cart items:", error);
-    }
-  }, []);
+    setCartItems(readCart(user));
+  }, [user]);
 
   useEffect(() => {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+    writeCart(user, cartItems);
     //updated cart when user adds something in the cart
     window.dispatchEvent(new Event("cart-updated"));
-  }, [cartItems]);
+  }, [cartItems, user]);
 
   const hasItems = cartItems.length > 0;
 

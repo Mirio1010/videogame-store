@@ -7,10 +7,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button/Button';
+import { useAuth } from '../context/AuthContext.jsx';
 import '../Styles/AuthPages.css';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -30,16 +32,17 @@ function LoginPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate login (replace with real API later)
-    setTimeout(() => {
+    try {
+      await login({
+        email: formData.email,
+        password: formData.password,
+      });
+      navigate('/');
+    } catch (loginError) {
+      setError(loginError.message || 'Invalid email or password');
+    } finally {
       setLoading(false);
-
-      if (formData.email && formData.password) {
-        navigate('/');
-      } else {
-        setError('Invalid email or password');
-      }
-    }, 1000);
+    }
   };
 
   return (
