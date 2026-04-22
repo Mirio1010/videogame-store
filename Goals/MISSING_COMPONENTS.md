@@ -1,14 +1,15 @@
 # Missing Components Report — Tier 1 MVP
 
 Based on a full audit of `/backend` and `/frontend` against the
-requirements in `Goals/Tier1.md` (as of April 18, 2026).
+requirements in `Goals/Tier1.md` (updated April 21, 2026 after `feature/supabase`).
 
 ---
 
-## Backend — Almost Entirely Missing
+## Backend — Partially Implemented
 
-The backend is a bare Express shell. It has no database, no authentication,
-and no business logic beyond the Steam API proxy added in `feature/steamAPI`.
+The backend now includes modular Supabase-based authentication and authorization,
+plus existing Steam API routes. Database-backed product/order/cart layers are
+still missing.
 
 ### Database
 - [ ] No database connected (no driver or ORM in `package.json` — e.g. `pg`, `mongoose`, `better-sqlite3`)
@@ -16,13 +17,13 @@ and no business logic beyond the Steam API proxy added in `feature/steamAPI`.
 - [ ] No seed script to populate initial data
 
 ### Authentication & Security
-- [ ] `POST /api/auth/register` — create a new user account
-- [ ] `POST /api/auth/login` — return a session token / JWT
-- [ ] `POST /api/auth/logout` — invalidate the session
-- [ ] Password hashing (`bcrypt` not installed — passwords must never be stored in plain text)
-- [ ] JWT or session management (`jsonwebtoken` / `express-session` not installed)
-- [ ] Auth middleware to protect private routes (cart, checkout, admin)
-- [ ] Unique-email enforcement at the database level
+- [x] `POST /api/auth/register` — create a new user account (via Supabase Auth)
+- [x] `POST /api/auth/login` — return authenticated session data (Supabase access/refresh tokens)
+- [x] `POST /api/auth/logout` — invalidate the session
+- [x] Password handling is delegated to Supabase Auth (no plain-text password storage in app code)
+- [x] Session/token auth flow implemented via Supabase Auth (no local JWT implementation required)
+- [~] Auth middleware exists (`authenticateRequest`, `authorizeRoles`) and is used on auth-protected backend routes; cart/order/admin product routes still not built
+- [x] Unique email behavior is handled by Supabase Auth
 
 ### Cart Routes (required for persistent cross-device cart)
 - [ ] `GET  /api/cart` — fetch the logged-in user's cart
@@ -39,28 +40,30 @@ and no business logic beyond the Steam API proxy added in `feature/steamAPI`.
 - [ ] `POST   /api/products` — add a product (admin only)
 - [ ] `PUT    /api/products/:id` — edit a product (admin only)
 - [ ] `DELETE /api/products/:id` — remove a product (admin only)
-- [ ] Admin authorization middleware (role check)
+- [x] Admin authorization middleware (role check) exists (`authorizeRoles`) and is used by `/api/auth/admin/check`
 
 ---
 
 ## Frontend — Partially Implemented
 
 ### Missing Pages & Routes
-- [ ] **Single product detail page** — exists now (`/game/:steamId`) ✅ added in `feature/steamAPI`
+- [x] **Single product detail page** — exists (`/game/:steamId`)
 - [ ] **Category filter page** — `CategoryCard` links to `/category/:slug` but no route or page exists
 - [ ] **404 / Not Found page** — no catch-all route; React Router silently shows nothing
 
-### Auth is Simulated, Not Real
-- [ ] `LoginPage` uses `setTimeout` with no API call — accepts any non-empty input
-- [ ] `RegisterPage` uses `setTimeout` with no API call — no validation against the backend
-- [ ] No auth context (React Context / Zustand / Redux) to share login state across the app
-- [ ] `Header.jsx` has `user` hardcoded to `null` — logged-in username is never displayed
-- [ ] No "sign out" action wired up anywhere
+### Auth is Now Integrated
+- [x] `LoginPage` calls backend auth API
+- [x] `RegisterPage` calls backend auth API
+- [x] Auth context added (`AuthContext`) with session persistence and restore
+- [x] `Header.jsx` uses real auth state and displays signed-in user email
+- [x] "Sign out" action is wired to backend logout
 
 ### Cart is Local-Only
-- [ ] Cart currently lives entirely in `localStorage` — not synced to the backend for logged-in users
-- [ ] No protected-route guard preventing unauthenticated users from reaching `/checkout`
-- [ ] Cart count in the header reflects `localStorage` only; will be wrong across devices
+- [~] Cart still lives in `localStorage` (no backend sync yet), but is now identity-scoped:
+	- guest cart: `cart:guest`
+	- signed-in user cart: `cart:user:<userId>`
+- [x] Protected-route guard added for `/checkout` (redirects unauthenticated users to `/register`)
+- [ ] Cart count is still browser-local and not cross-device until backend cart APIs are implemented
 
 ### Checkout is a Stub
 - [ ] `Checkout.jsx` renders `<p>Checkout Page</p>` — no form, no order summary, no confirmation
@@ -71,7 +74,7 @@ and no business logic beyond the Steam API proxy added in `feature/steamAPI`.
 - [ ] No "product not found" dedicated UI message (currently just a plain paragraph)
 
 ### Navigation & UX
-- [ ] No visible indication that the user is logged in (name/username in the header)
+- [x] Visible indication that user is logged in (email shown in header)
 - [ ] No "navigate back to home" fallback on error states
 
 ---
@@ -96,12 +99,9 @@ and no business logic beyond the Steam API proxy added in `feature/steamAPI`.
 | Priority | Slice | Key tasks |
 |---|---|---|
 | 1 | Database setup | Choose DB, install driver, define user + order models |
-| 2 | Auth (backend) | Register / login routes, bcrypt, JWT middleware |
-| 3 | Auth (frontend) | Wire forms to API, auth context, show username in header, logout |
-| 4 | Persistent cart (backend) | Cart routes, tie cart to user session |
-| 5 | Persistent cart (frontend) | Sync `localStorage` cart with backend on login |
-| 6 | Checkout | Order summary UI, `POST /api/orders`, confirmation page |
-| 7 | Protected routes | Route guard for `/checkout` and `/cart` (logged-in only) |
-| 8 | Admin | Admin middleware + routes; product CRUD UI |
-| 9 | Category page | `/category/:slug` page filtering store by genre |
-| 10 | 404 page | Catch-all route with "Go Home" link |
+| 2 | Persistent cart (backend) | Build `/api/cart` routes and tie cart to authenticated user |
+| 3 | Persistent cart sync (frontend) | Sync local cart with backend cart for logged-in users |
+| 4 | Checkout | Order summary UI, `POST /api/orders`, confirmation page |
+| 5 | Admin | Admin routes for users/products and frontend admin views |
+| 6 | Category page | `/category/:slug` page filtering store by genre |
+| 7 | 404 page | Catch-all route with "Go Home" link |
