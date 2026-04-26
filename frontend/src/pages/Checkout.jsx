@@ -1,11 +1,9 @@
-// added a simple checkout page that reads cart items from localStorage, calculates totals, and has a form for customer info. 
-// No real payment processing or backend integration yet, just simulating order placement and clearing the cart.
-// will expand on this later with better styling, validation, and maybe a mock API call to "place" the order. :DDD 
-
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import "../styles/CheckoutPage.css";
+import { readCart, writeCart } from "../utils/cartStorage";
 
-const CART_STORAGE_KEY = "cart";
 const TAX_RATE = 0.08875; // example 8.875%
 
 const Checkout = () => {
@@ -20,27 +18,11 @@ const Checkout = () => {
   });
 
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
-    const rawCart = localStorage.getItem(CART_STORAGE_KEY);
-
-    if (!rawCart) {
-      setCartItems([]);
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(rawCart);
-      if (Array.isArray(parsed)) {
-        setCartItems(parsed);
-      } else {
-        setCartItems([]);
-      }
-    } catch (error) {
-      console.error("Error parsing checkout cart items:", error);
-      setCartItems([]);
-    }
-  }, []);
+    setCartItems(readCart(user));
+  }, [user]);
 
   const subtotal = useMemo(() => {
     return cartItems.reduce((sum, item) => {
@@ -95,11 +77,8 @@ const Checkout = () => {
 
     console.log("Order placed:", orderData);
 
-    // optional: save order somewhere later
-    // localStorage.setItem("lastOrder", JSON.stringify(orderData));
-
-    // clear cart after successful order
-    localStorage.removeItem(CART_STORAGE_KEY);
+    writeCart(user, []);
+    setCartItems([]);
     window.dispatchEvent(new Event("cart-updated"));
 
     alert("Order placed successfully!");
@@ -109,38 +88,35 @@ const Checkout = () => {
 
   if (cartItems.length === 0) {
     return (
-      <main style={{ maxWidth: 1000, margin: "2rem auto", padding: "0 1rem" }}>
-        <h1>Checkout</h1>
-        <p>Your cart is empty.</p>
-        <button onClick={() => navigate("/cart")}>Back to Cart</button>
+      <main className="checkout-page checkout-page--empty container">
+        <section className="checkout-empty-state">
+          <h1 className="checkout-title">Checkout</h1>
+          <p className="checkout-subtitle">Your cart is empty.</p>
+          <button className="checkout-secondary-btn" onClick={() => navigate("/cart")}>
+            Back to Cart
+          </button>
+        </section>
       </main>
     );
   }
 
   return (
-    <main style={{ maxWidth: 1000, margin: "2rem auto", padding: "0 1rem" }}>
-      <h1>Checkout</h1>
+    <main className="checkout-page container">
+      <header className="checkout-hero">
+        <p className="checkout-eyebrow">Secure Checkout</p>
+        <h1 className="checkout-title">Complete your order</h1>
+        <p className="checkout-subtitle">
+          Review your cart, enter billing details, and place your order.
+        </p>
+      </header>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "2fr 1fr",
-          gap: "2rem",
-          alignItems: "start",
-        }}
-      >
-        <form
-          onSubmit={handlePlaceOrder}
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: 8,
-            padding: "1.5rem",
-          }}
-        >
-          <h2>Billing Details</h2>
+      <div className="checkout-layout">
+        <form className="checkout-card" onSubmit={handlePlaceOrder}>
+          <h2 className="checkout-section-title">Billing Details</h2>
 
-          <div style={{ display: "grid", gap: "1rem" }}>
+          <div className="checkout-form-grid">
             <input
+              className="checkout-input"
               type="text"
               name="fullName"
               placeholder="Full Name"
@@ -149,6 +125,7 @@ const Checkout = () => {
             />
 
             <input
+              className="checkout-input"
               type="email"
               name="email"
               placeholder="Email Address"
@@ -157,6 +134,7 @@ const Checkout = () => {
             />
 
             <input
+              className="checkout-input checkout-input--full"
               type="text"
               name="address"
               placeholder="Street Address"
@@ -165,6 +143,7 @@ const Checkout = () => {
             />
 
             <input
+              className="checkout-input"
               type="text"
               name="city"
               placeholder="City"
@@ -173,6 +152,7 @@ const Checkout = () => {
             />
 
             <input
+              className="checkout-input"
               type="text"
               name="state"
               placeholder="State"
@@ -181,6 +161,7 @@ const Checkout = () => {
             />
 
             <input
+              className="checkout-input"
               type="text"
               name="zipCode"
               placeholder="ZIP Code"
@@ -189,51 +170,39 @@ const Checkout = () => {
             />
           </div>
 
-          <button
-            type="submit"
-            style={{
-              marginTop: "1.5rem",
-              padding: "0.8rem 1.2rem",
-              borderRadius: 6,
-              fontWeight: 600,
-            }}
-          >
+          <button className="checkout-primary-btn" type="submit">
             Place Order
           </button>
         </form>
 
-        <aside
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: 8,
-            padding: "1.5rem",
-          }}
-        >
-          <h2>Order Summary</h2>
+        <aside className="checkout-card checkout-summary">
+          <h2 className="checkout-section-title">Order Summary</h2>
 
           {cartItems.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                borderBottom: "1px solid #eee",
-                paddingBottom: "0.75rem",
-                marginBottom: "0.75rem",
-              }}
-            >
-              <h4 style={{ margin: 0 }}>{item.title}</h4>
-              <p style={{ margin: "0.25rem 0" }}>
+            <div key={item.id} className="checkout-summary-item">
+              <h4 className="checkout-item-title">{item.title}</h4>
+              <p className="checkout-item-meta">
                 ${item.price.toFixed(2)} × {item.quantity}
               </p>
-              <p style={{ margin: 0, fontWeight: 600 }}>
+              <p className="checkout-item-total">
                 ${(item.price * item.quantity).toFixed(2)}
               </p>
             </div>
           ))}
 
-          <div style={{ marginTop: "1rem" }}>
-            <p>Subtotal: ${subtotal.toFixed(2)}</p>
-            <p>Tax: ${tax.toFixed(2)}</p>
-            <h3>Total: ${total.toFixed(2)}</h3>
+          <div className="checkout-totals">
+            <p className="checkout-total-row">
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </p>
+            <p className="checkout-total-row">
+              <span>Tax</span>
+              <span>${tax.toFixed(2)}</span>
+            </p>
+            <h3 className="checkout-grand-total">
+              <span>Total</span>
+              <span>${total.toFixed(2)}</span>
+            </h3>
           </div>
         </aside>
       </div>
