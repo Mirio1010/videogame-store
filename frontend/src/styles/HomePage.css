@@ -1,5 +1,7 @@
 /* HomePage Styles */
 
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 .home-page {
   display: flex;
   flex-direction: column;
@@ -19,6 +21,10 @@
 }
 
 .hero-title {
+  font-family: "Pixelify Sans", sans-serif;
+  font-weight: 700; /* Boldest setting for a header */
+  font-size: 4rem;  /* Adjust size as needed */
+  text-transform: uppercase;
   font-size: 3rem;
   font-weight: 700;
   color: var(--color-text-white);
@@ -83,7 +89,7 @@
 
 .section-title {
   font-size: 1.5rem;
-  color: var(--color-text-white);
+  color: var("--color-text-white");
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
