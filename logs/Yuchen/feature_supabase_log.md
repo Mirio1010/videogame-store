@@ -1,3 +1,6 @@
+# Changelog — feature/supabase
+Date: 2026-04-21  
+Branch: `feature/supabase`
 
 ## TL;DR
 
@@ -23,9 +26,6 @@ SUPABASE_SERVICE_ROLE_KEY=<ASK YUCHEN>
 ```
 
 # Feature Log: Supabase Auth + Protected Checkout + Private Cart
-
-Date: 2026-04-21  
-Branch: `feature/supabase`
 
 ## Summary
 

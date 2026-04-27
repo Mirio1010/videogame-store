@@ -1,3 +1,7 @@
+# Changelog — update/checkoutPage
+Date: 2026-04-22
+Branch: `update/CheckoutPage`
+
 ## TL;DR
 
 - Fixed missing `export default` on `Checkout` component that would have broken the route import.
@@ -6,9 +10,6 @@
 - Verified through editor diagnostics and successful frontend build (exit code 0).
 
 # Feature Log: Checkout Page Fix + Styling
-
-Date: 2026-04-22
-Branch: `update/CheckoutPage`
 
 ## Summary
 
