@@ -111,6 +111,113 @@
   gap: var(--spacing-lg);
 }
 
+/* Game Card */
+.game-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(102, 192, 244, 0.08);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.game-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(102, 192, 244, 0.28);
+  box-shadow: var(--shadow-md);
+}
+
+.game-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.game-card-link:hover {
+  text-decoration: none;
+}
+
+.game-card-image {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  background: #0b0f14;
+}
+
+.game-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.discount-badge {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  background: linear-gradient(180deg, #4c6b22 0%, #3f5a1d 100%);
+  color: #a4d007;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  padding: 0.28rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.game-card-info {
+  padding: var(--spacing-sm) 0;
+}
+
+.game-card-info h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-white);
+  margin: 0;
+}
+
+.game-card-price {
+  margin-top: var(--spacing-xs);
+  margin-bottom: 0;
+  color: var(--color-text-primary);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.game-card-add-btn {
+  margin-top: var(--spacing-sm);
+  width: 100%;
+  background: linear-gradient(180deg, #7ec9f7 0%, #57b0e8 100%);
+  color: #0d1117;
+  border: 1px solid rgba(13, 17, 23, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.game-card-add-btn:hover {
+  background: linear-gradient(180deg, #99d7fa 0%, #67bcec 100%);
+  box-shadow: 0 4px 10px rgba(102, 192, 244, 0.35);
+  transform: translateY(-1px);
+}
+
+.game-card-add-btn:active {
+  transform: translateY(0);
+}
+
+.game-card-added-msg {
+  margin-top: var(--spacing-sm);
+  margin-bottom: 0;
+  color: #9be77a;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 /* Categories */
 .categories-section {
   background: var(--color-bg-darkest);

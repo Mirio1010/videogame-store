@@ -4,10 +4,10 @@
 //in the future will add a notifcation when a user clicks add to cart it will have a notifcation saying
 //"added game to cart"
 import { useEffect, useMemo, useState } from "react";
-//used useNavigate to navigate to the checkout page
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { readCart, writeCart } from "../utils/cartStorage";
+import "../styles/CartPage.css";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -28,6 +28,10 @@ const Cart = () => {
 
   const totalPrice = useMemo(() => {
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }, [cartItems]);
+
+  const totalItems = useMemo(() => {
+    return cartItems.reduce((sum, item) => sum + item.quantity, 0);
   }, [cartItems]);
 
   const updateQuantity = (itemId, newQuantity) => {
@@ -52,59 +56,86 @@ const Cart = () => {
   };
 
   return (
-    <main style={{ maxWidth: 900, margin: "2rem auto", padding: "0 1rem" }}>
-      <h1>Your Cart</h1>
+    <main className="cart-page container">
+      <header className="cart-header">
+        <h1 className="cart-title">Your Cart</h1>
+      </header>
 
       {!hasItems ? (
-        <p>Your cart is empty! Go Start Shopping and Start Your Journey!</p>
+        <section className="cart-empty-state">
+          <p>Your cart is empty! Go start shopping and start your journey!</p>
+        </section>
       ) : (
-        <>
-          {cartItems.map((item) => (
-            <article
-              key={item.id}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr auto auto",
-                gap: "1rem",
-                alignItems: "center",
-                padding: "1rem",
-                border: "1px solid #ddd",
-                borderRadius: 8,
-                marginBottom: "0.75rem",
-              }}
+        <div className="cart-layout">
+          <section className="cart-items-panel">
+            {cartItems.map((item) => (
+              <article key={item.id} className="cart-item">
+                <div className="cart-item-media">
+                  <img src={item.image} alt={item.title} className="cart-item-image" />
+                </div>
+                <div className="cart-item-info">
+                  <h3>{item.title}</h3>
+                  <p className="cart-item-price">${item.price.toFixed(2)} each</p>
+                  <p className="cart-item-subtotal">
+                    Subtotal: ${(item.price * item.quantity).toFixed(2)}
+                  </p>
+                </div>
+                <div className="cart-item-actions">
+                  <div className="cart-quantity-controls">
+                    <button
+                      type="button"
+                      className="cart-quantity-btn"
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    >
+                      -
+                    </button>
+                    <span className="cart-quantity-label">Qty: {item.quantity}</span>
+                    <button
+                      type="button"
+                      className="cart-quantity-btn"
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    className="cart-remove-btn"
+                    onClick={() => removeItem(item.id)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </article>
+            ))}
+          </section>
+
+          <aside className="cart-summary-panel">
+            <p className="cart-summary-eyebrow">Order Summary</p>
+            <h2 className="cart-total">${totalPrice.toFixed(2)}</h2>
+            <div className="cart-summary-rows">
+              <p className="cart-summary-row">
+                <span>Total Games</span>
+                <span>{totalItems}</span>
+              </p>
+              <p className="cart-summary-row">
+                <span>Unique Copies</span>
+                <span>{cartItems.length}</span>
+              </p>
+              <p className="cart-summary-row">
+                <span>Subtotal</span>
+                <span>${totalPrice.toFixed(2)}</span>
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleCheckout}
+              className="cart-checkout-btn"
             >
-              <div>
-                <h3 style={{ margin: 0 }}>{item.title}</h3>
-                <p style={{ margin: "0.25rem 0 0 0" }}>
-                  ${item.price.toFixed(2)} each
-                </p>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>
-                  -
-                </button>
-                <span>Qty: {item.quantity}</span>
-                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                  +
-                </button>
-              </div>
-              <button onClick={() => removeItem(item.id)}>Remove</button>
-            </article>
-          ))}
-          <h2>Total: ${totalPrice.toFixed(2)}</h2>
-          <button
-            type="button"
-            onClick={handleCheckout}
-            style={{
-              marginTop: "1rem",
-              padding: "0.75rem 1.25rem",
-              borderRadius: 6,
-              fontWeight: 600,
-            }}
-          >
-            Checkout
-          </button>
-        </>
+              Proceed to Checkout
+            </button>
+          </aside>
+        </div>
       )}
     </main>
   );

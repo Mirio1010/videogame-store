@@ -7,6 +7,7 @@ import { addGameToCart } from "../utils/cartStorage";
 const GameCard = ({ game }) => {
   const { user } = useAuth();
   const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const discountValue = Number(game.discount) || 0;
 
   useEffect(() => {
     if (!showAddedMessage) return undefined;
@@ -26,14 +27,11 @@ const GameCard = ({ game }) => {
 
   return (
     <div className="game-card">
-      <Link
-        to={`/game/${game.id}`}
-        style={{ textDecoration: "none", color: "inherit" }}
-      >
+      <Link to={`/game/${game.id}`} className="game-card-link">
         <div className="game-card-image">
           <img src={game.image} alt={game.title} />
-          {game.discount && (
-            <span className="discount-badge">-{game.discount}%</span>
+          {discountValue > 0 && (
+            <span className="discount-badge">-{discountValue}%</span>
           )}
         </div>
         <div className="game-card-info">
@@ -42,23 +40,11 @@ const GameCard = ({ game }) => {
         </div>
       </Link>
 
-      <button
-        type="button"
-        onClick={addToCart}
-        style={{ marginTop: "0.75rem", width: "100%" }}
-      >
+      <button type="button" onClick={addToCart} className="game-card-add-btn">
         Add to cart
       </button>
       {showAddedMessage && (
-        <p
-          style={{
-            marginTop: "0.5rem",
-            marginBottom: 0,
-            color: "#00ff00",
-            fontSize: "0.9rem",
-            fontWeight: 600,
-          }}
-        >
+        <p className="game-card-added-msg">
           Added to cart!
         </p>
       )}
