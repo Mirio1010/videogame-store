@@ -5,13 +5,28 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 /**
  * Fetch all games from the curated catalog.
  *
- * @param {{ featured?: boolean, onSale?: boolean }} [filters]
+ * @param {{ featured?: boolean, onSale?: boolean, genre?: string[], minPrice?: number, maxPrice?: number }} [filters]
  * @returns {Promise<Array>}
  */
-export async function fetchAllGames({ featured, onSale } = {}) {
+export async function fetchAllGames({
+  featured,
+  onSale,
+  genre,
+  minPrice,
+  maxPrice,
+} = {}) {
   const params = new URLSearchParams();
   if (featured) params.set("featured", "true");
   if (onSale) params.set("onSale", "true");
+  if (genre && genre.length > 0) {
+    params.set("genre", genre.join(","));
+  }
+  if (minPrice !== undefined && minPrice !== null) {
+    params.set("minPrice", minPrice);
+  }
+  if (maxPrice !== undefined && maxPrice !== null) {
+    params.set("maxPrice", maxPrice);
+  }
 
   const qs = params.toString();
   const res = await fetch(`${API_BASE}/api/games${qs ? `?${qs}` : ""}`);
