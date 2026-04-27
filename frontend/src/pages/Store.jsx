@@ -20,6 +20,20 @@ const Store = () => {
   const [onSaleOnly, setOnSaleOnly] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Sync URL query params into local filter state.
+  useEffect(() => {
+    const genreQuery = searchParams.get("genre");
+    const genreFromUrl = genreQuery
+      ? genreQuery
+          .split(",")
+          .map((g) => g.trim())
+          .filter(Boolean)
+      : [];
+
+    setSelectedGenres(genreFromUrl);
+    setOnSaleOnly(searchParams.get("onSale") === "true");
+  }, [searchParams]);
+
   // Fetch categories and games on mount
   useEffect(() => {
     const loadData = async () => {
