@@ -27,7 +27,7 @@ async function withSteamDetails(adminEntry) {
 
 router.get("/games", async (req, res, next) => {
   try {
-    const adminGames = listAdminGames();
+    const adminGames = await listAdminGames();
     const games = await Promise.all(adminGames.map(withSteamDetails));
     res.json({ success: true, games });
   } catch (err) {
@@ -46,7 +46,7 @@ router.post("/games", async (req, res, next) => {
         .json({ success: false, error: "Game not found on Steam." });
     }
 
-    const adminGame = addAdminGame(req.body);
+    const adminGame = await addAdminGame(req.body);
     const response = await withSteamDetails(adminGame);
     res.status(201).json({ success: true, game: response });
   } catch (err) {
@@ -56,7 +56,7 @@ router.post("/games", async (req, res, next) => {
 
 router.put("/games/:steamId", async (req, res, next) => {
   try {
-    const adminGame = updateAdminGame(req.params.steamId, req.body);
+    const adminGame = await updateAdminGame(req.params.steamId, req.body);
     const response = await withSteamDetails(adminGame);
     res.json({ success: true, game: response });
   } catch (err) {
@@ -64,9 +64,9 @@ router.put("/games/:steamId", async (req, res, next) => {
   }
 });
 
-router.delete("/games/:steamId", (req, res, next) => {
+router.delete("/games/:steamId", async (req, res, next) => {
   try {
-    deleteAdminGame(req.params.steamId);
+    await deleteAdminGame(req.params.steamId);
     res.json({ success: true });
   } catch (err) {
     next(err);

@@ -107,7 +107,7 @@ async function fetchAppDetails(steamId) {
  * breaks the whole page.
  */
 async function getAllGames() {
-  const adminGames = getActiveAdminGames();
+  const adminGames = await getActiveAdminGames();
   const adminBySteamId = new Map(
     adminGames.map((game) => [game.steamId, game])
   );

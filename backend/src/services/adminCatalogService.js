@@ -1,134 +1,142 @@
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
+const { createSupabaseAdminClient } = require("./supabaseClient");
 
-const DATA_DIR = path.join(__dirname, "..", "data");
-const ADMIN_GAMES_FILE = path.join(DATA_DIR, "admin-games.json");
-
-function ensureStore() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-
-  if (!fs.existsSync(ADMIN_GAMES_FILE)) {
-    fs.writeFileSync(ADMIN_GAMES_FILE, "[]\n", "utf8");
-  }
+function createHttpError(message, statusCode) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
 }
 
-function readAdminGames() {
-  ensureStore();
-
-  try {
-    const raw = fs.readFileSync(ADMIN_GAMES_FILE, "utf8");
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    console.error("Failed to read admin catalog:", error);
-    return [];
-  }
-}
-
-function writeAdminGames(games) {
-  ensureStore();
-  fs.writeFileSync(ADMIN_GAMES_FILE, `${JSON.stringify(games, null, 2)}\n`, "utf8");
+function toAdminGame(row) {
+  return {
+    steamId: Number(row.steam_id),
+    price: Number(row.price),
+    originalPrice: Number(row.original_price),
+    discount: Number(row.discount),
+    featured: Boolean(row.featured),
+    active: row.active !== false,
+    updatedAt: row.updated_at,
+    createdAt: row.created_at,
+  };
 }
 
 function normalizeAdminGame(input, existing = {}) {
   const steamId = Number(input.steamId ?? existing.steamId);
   if (!Number.isInteger(steamId) || steamId <= 0) {
-    const error = new Error("Steam App ID must be a positive whole number.");
-    error.statusCode = 400;
-    throw error;
+    throw createHttpError("Steam App ID must be a positive whole number.", 400);
   }
 
   const price = Number(input.price ?? existing.price ?? 0);
   if (!Number.isFinite(price) || price < 0) {
-    const error = new Error("Price must be a non-negative number.");
-    error.statusCode = 400;
-    throw error;
+    throw createHttpError("Price must be a non-negative number.", 400);
   }
 
   const originalPriceInput = input.originalPrice ?? existing.originalPrice ?? price;
   const originalPrice = Number(originalPriceInput);
   if (!Number.isFinite(originalPrice) || originalPrice < 0) {
-    const error = new Error("Original price must be a non-negative number.");
-    error.statusCode = 400;
-    throw error;
+    throw createHttpError("Original price must be a non-negative number.", 400);
   }
 
   const discountInput = input.discount ?? existing.discount ?? 0;
   const discount = Number(discountInput);
   if (!Number.isFinite(discount) || discount < 0 || discount > 100) {
-    const error = new Error("Discount must be between 0 and 100.");
-    error.statusCode = 400;
-    throw error;
+    throw createHttpError("Discount must be between 0 and 100.", 400);
   }
 
   return {
-    steamId,
+    steam_id: steamId,
     price: Number(price.toFixed(2)),
-    originalPrice: Number(originalPrice.toFixed(2)),
+    original_price: Number(originalPrice.toFixed(2)),
     discount: Math.round(discount),
     featured: Boolean(input.featured ?? existing.featured ?? false),
     active: input.active ?? existing.active ?? true,
-    updatedAt: new Date().toISOString(),
-    createdAt: existing.createdAt ?? new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 }
 
-function listAdminGames() {
-  return readAdminGames().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-}
+function handleSupabaseError(error, fallbackMessage = "Admin catalog request failed") {
+  if (!error) return;
 
-function getActiveAdminGames() {
-  return readAdminGames().filter((game) => game.active !== false);
-}
-
-function addAdminGame(input) {
-  const games = readAdminGames();
-  const next = normalizeAdminGame(input);
-
-  if (games.some((game) => game.steamId === next.steamId)) {
-    const error = new Error("This Steam App ID is already managed by admin.");
-    error.statusCode = 409;
-    throw error;
+  if (error.code === "23505") {
+    throw createHttpError("This Steam App ID is already managed by admin.", 409);
   }
 
-  games.push(next);
-  writeAdminGames(games);
-  return next;
+  throw createHttpError(error.message || fallbackMessage, 500);
 }
 
-function updateAdminGame(steamId, input) {
-  const games = readAdminGames();
-  const numericSteamId = Number(steamId);
-  const index = games.findIndex((game) => game.steamId === numericSteamId);
+async function listAdminGames() {
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from("admin_games")
+    .select("*")
+    .order("updated_at", { ascending: false });
 
-  if (index === -1) {
-    const error = new Error("Admin game not found.");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  const updated = normalizeAdminGame({ ...input, steamId: numericSteamId }, games[index]);
-  games[index] = updated;
-  writeAdminGames(games);
-  return updated;
+  handleSupabaseError(error, "Failed to list admin games");
+  return (data || []).map(toAdminGame);
 }
 
-function deleteAdminGame(steamId) {
-  const games = readAdminGames();
-  const numericSteamId = Number(steamId);
-  const next = games.filter((game) => game.steamId !== numericSteamId);
+async function getActiveAdminGames() {
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from("admin_games")
+    .select("*")
+    .eq("active", true)
+    .order("updated_at", { ascending: false });
 
-  if (next.length === games.length) {
-    const error = new Error("Admin game not found.");
-    error.statusCode = 404;
-    throw error;
+  handleSupabaseError(error, "Failed to list active admin games");
+  return (data || []).map(toAdminGame);
+}
+
+async function addAdminGame(input) {
+  const supabase = createSupabaseAdminClient();
+  const payload = normalizeAdminGame(input);
+  const { data, error } = await supabase
+    .from("admin_games")
+    .insert(payload)
+    .select("*")
+    .single();
+
+  handleSupabaseError(error, "Failed to add admin game");
+  return toAdminGame(data);
+}
+
+async function updateAdminGame(steamId, input) {
+  const existingGames = await listAdminGames();
+  const existing = existingGames.find((game) => game.steamId === Number(steamId));
+  if (!existing) {
+    throw createHttpError("Admin game not found.", 404);
   }
 
-  writeAdminGames(next);
+  const supabase = createSupabaseAdminClient();
+  const payload = normalizeAdminGame(input, existing);
+  delete payload.steam_id;
+  const { data, error } = await supabase
+    .from("admin_games")
+    .update(payload)
+    .eq("steam_id", Number(steamId))
+    .select("*")
+    .single();
+
+  handleSupabaseError(error, "Failed to update admin game");
+  return toAdminGame(data);
+}
+
+async function deleteAdminGame(steamId) {
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from("admin_games")
+    .delete()
+    .eq("steam_id", Number(steamId))
+    .select("steam_id")
+    .single();
+
+  if (error?.code === "PGRST116") {
+    throw createHttpError("Admin game not found.", 404);
+  }
+
+  handleSupabaseError(error, "Failed to delete admin game");
+  return data;
 }
 
 function applyAdminOverrides(game, adminEntry) {
