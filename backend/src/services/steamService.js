@@ -1,37 +1,16 @@
 "use strict";
 
 const STEAM_STORE_API = "https://store.steampowered.com/api";
+const {
+  applyAdminOverrides,
+  getActiveAdminGames,
+} = require("./adminCatalogService");
 
 // Cache TTL: 1 hour — Steam prices / data rarely change faster than this
 const CACHE_TTL_MS = 60 * 60 * 1000;
 
 // In-memory cache: Map<steamId, { data, fetchedAt }>
 const cache = new Map();
-
-// ---------------------------------------------------------------------------
-// Curated game catalog — add or remove Steam App IDs to change the store
-// featured: true  → shown in the "Featured Games" section on the home page
-// ---------------------------------------------------------------------------
-const GAME_CATALOG = [
-  { steamId: 1091500, featured: true  }, // Cyberpunk 2077
-  { steamId: 1245620, featured: true  }, // Elden Ring
-  { steamId: 1086940, featured: true  }, // Baldur's Gate 3
-  { steamId: 1145350, featured: true  }, // Hades II
-  { steamId: 526870,  featured: true  }, // Satisfactory
-  { steamId: 1332010, featured: true  }, // Stray
-  { steamId: 2868840, featured: true  }, // Slay the Spire 2
-  { steamId: 3419430, featured: true  }, // Bongo Cat
-  { steamId: 2050650, featured: true  }, // Resident Evil 4
-  { steamId: 292030,  featured: false }, // The Witcher 3
-  { steamId: 1174180, featured: false }, // Red Dead Redemption 2
-  { steamId: 814380,  featured: false }, // Sekiro: Shadows Die Twice
-  { steamId: 620,     featured: false }, // Portal 2
-  { steamId: 105600,  featured: false }, // Terraria
-];
-
-const FEATURED_IDS = new Set(
-  GAME_CATALOG.filter((g) => g.featured).map((g) => g.steamId)
-);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -84,7 +63,7 @@ function normalizeGame(steamId, data) {
     discount: price ? price.discount_percent : 0,
     onSale: price ? price.discount_percent > 0 : false,
 
-    featured: FEATURED_IDS.has(steamId),
+    featured: false,
 
     releaseDate: data.release_date?.date ?? null,
   };
@@ -128,12 +107,22 @@ async function fetchAppDetails(steamId) {
  * breaks the whole page.
  */
 async function getAllGames() {
-  const results = await Promise.allSettled(
-    GAME_CATALOG.map(({ steamId }) => fetchAppDetails(steamId))
+  const adminGames = getActiveAdminGames();
+  const adminBySteamId = new Map(
+    adminGames.map((game) => [game.steamId, game])
   );
+  const steamIds = [
+    ...new Set(adminGames.map(({ steamId }) => steamId)),
+  ];
+
+  const results = await Promise.allSettled(
+    steamIds.map((steamId) => fetchAppDetails(steamId))
+  );
+
   return results
     .filter((r) => r.status === "fulfilled" && r.value !== null)
-    .map((r) => r.value);
+    .map((r) => applyAdminOverrides(r.value, adminBySteamId.get(r.value.id)))
+    .filter((game) => game.active !== false);
 }
 
 module.exports = { fetchAppDetails, getAllGames };
