@@ -57,7 +57,7 @@ function AppRoutes() {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute redirectTo="/login">
+          <ProtectedRoute redirectTo="/login" allowedRoles={["admin"]}>
             <Admin />
           </ProtectedRoute>
         }

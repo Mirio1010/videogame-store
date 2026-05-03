@@ -2,6 +2,10 @@
 
 const express = require("express");
 const router = express.Router();
+const {
+  authenticateRequest,
+  authorizeRoles,
+} = require("../middleware/auth");
 const { fetchAppDetails } = require("../services/steamService");
 const {
   addAdminGame,
@@ -10,6 +14,8 @@ const {
   listAdminGames,
   updateAdminGame,
 } = require("../services/adminCatalogService");
+
+router.use(authenticateRequest, authorizeRoles("admin"));
 
 async function withSteamDetails(adminEntry) {
   const game = await fetchAppDetails(adminEntry.steamId);

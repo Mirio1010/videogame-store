@@ -6,6 +6,7 @@ import {
   fetchAdminGames,
   updateAdminGame,
 } from "../services/gamesService";
+import { useAuth } from "../context/AuthContext.jsx";
 import "../styles/HomePage.css";
 import "../styles/AdminPage.css";
 
@@ -19,6 +20,7 @@ const emptyForm = {
 };
 
 function Admin() {
+  const { session } = useAuth();
   const [games, setGames] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editingSteamId, setEditingSteamId] = useState(null);
@@ -41,7 +43,7 @@ function Admin() {
     setLoading(true);
     setError("");
     try {
-      const data = await fetchAdminGames();
+      const data = await fetchAdminGames(session?.access_token);
       setGames(data);
     } catch (err) {
       setError(err.message);
@@ -52,7 +54,7 @@ function Admin() {
 
   useEffect(() => {
     void loadGames();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -95,10 +97,10 @@ function Admin() {
 
     try {
       if (editingSteamId) {
-        await updateAdminGame(editingSteamId, payload);
+        await updateAdminGame(session?.access_token, editingSteamId, payload);
         setSuccess("Game updated.");
       } else {
-        await createAdminGame(payload);
+        await createAdminGame(session?.access_token, payload);
         setSuccess("Game added to the store.");
       }
       resetForm();
@@ -115,7 +117,7 @@ function Admin() {
     setSuccess("");
 
     try {
-      await deleteAdminGame(steamId);
+      await deleteAdminGame(session?.access_token, steamId);
       setSuccess("Game removed from admin catalog.");
       if (editingSteamId === steamId) resetForm();
       await loadGames();

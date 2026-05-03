@@ -66,8 +66,17 @@ export async function fetchGameById(steamId) {
   return data.game;
 }
 
-export async function fetchAdminGames() {
-  const res = await fetch(`${API_BASE}/api/admin/games`);
+function getAdminHeaders(accessToken) {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${accessToken}`,
+  };
+}
+
+export async function fetchAdminGames(accessToken) {
+  const res = await fetch(`${API_BASE}/api/admin/games`, {
+    headers: getAdminHeaders(accessToken),
+  });
   if (!res.ok) {
     throw new Error(`Failed to fetch admin games (${res.status})`);
   }
@@ -75,10 +84,10 @@ export async function fetchAdminGames() {
   return data.games;
 }
 
-export async function createAdminGame(game) {
+export async function createAdminGame(accessToken, game) {
   const res = await fetch(`${API_BASE}/api/admin/games`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getAdminHeaders(accessToken),
     body: JSON.stringify(game),
   });
 
@@ -89,10 +98,10 @@ export async function createAdminGame(game) {
   return data.game;
 }
 
-export async function updateAdminGame(steamId, game) {
+export async function updateAdminGame(accessToken, steamId, game) {
   const res = await fetch(`${API_BASE}/api/admin/games/${steamId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: getAdminHeaders(accessToken),
     body: JSON.stringify(game),
   });
 
@@ -103,9 +112,10 @@ export async function updateAdminGame(steamId, game) {
   return data.game;
 }
 
-export async function deleteAdminGame(steamId) {
+export async function deleteAdminGame(accessToken, steamId) {
   const res = await fetch(`${API_BASE}/api/admin/games/${steamId}`, {
     method: "DELETE",
+    headers: getAdminHeaders(accessToken),
   });
 
   const data = await res.json();

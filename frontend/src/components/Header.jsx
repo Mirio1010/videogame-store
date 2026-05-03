@@ -179,7 +179,7 @@ const Header = () => {
             My Orders
           </Button>
         )}
-        {isAuthenticated && (
+        {user?.role === "admin" && (
           <Button variant="secondary" onClick={() => navigate("/admin")}>
             Admin
           </Button>
