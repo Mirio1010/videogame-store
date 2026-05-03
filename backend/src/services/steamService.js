@@ -19,6 +19,9 @@ const GAME_CATALOG = [
   { steamId: 1145350, featured: true  }, // Hades II
   { steamId: 526870,  featured: true  }, // Satisfactory
   { steamId: 1332010, featured: true  }, // Stray
+  { steamId: 2868840, featured: true  }, // Slay the Spire 2
+  { steamId: 3419430, featured: true  }, // Bongo Cat
+  { steamId: 2050650, featured: true  }, // Resident Evil 4
   { steamId: 292030,  featured: false }, // The Witcher 3
   { steamId: 1174180, featured: false }, // Red Dead Redemption 2
   { steamId: 814380,  featured: false }, // Sekiro: Shadows Die Twice

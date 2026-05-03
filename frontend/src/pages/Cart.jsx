@@ -7,21 +7,44 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { readCart, writeCart } from "../utils/cartStorage";
+import {
+  fetchCart as fetchRemoteCart,
+  removeCartItem as removeRemoteCartItem,
+  updateCartItemQuantity as updateRemoteQuantity,
+} from "../services/cartService";
 import "../styles/CartPage.css";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
-  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const { user, session } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    setCartItems(readCart(user));
-  }, [user]);
+    async function loadCart() {
+      setLoading(true);
+      try {
+        if (user?.id && session?.access_token) {
+          const response = await fetchRemoteCart(session.access_token);
+          setCartItems(response.items || []);
+        } else {
+          setCartItems(readCart(user));
+        }
+      } catch (error) {
+        console.error("Failed to load cart:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCart();
+  }, [session, user]);
 
   useEffect(() => {
-    writeCart(user, cartItems);
-    //updated cart when user adds something in the cart
-    window.dispatchEvent(new Event("cart-updated"));
+    if (!user?.id) {
+      writeCart(user, cartItems);
+      window.dispatchEvent(new Event("cart-updated"));
+    }
   }, [cartItems, user]);
 
   const hasItems = cartItems.length > 0;
@@ -34,9 +57,20 @@ const Cart = () => {
     return cartItems.reduce((sum, item) => sum + item.quantity, 0);
   }, [cartItems]);
 
-  const updateQuantity = (itemId, newQuantity) => {
+  const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity <= 0) {
-      removeItem(itemId);
+      await removeItem(itemId);
+      return;
+    }
+
+    if (user?.id && session?.access_token) {
+      try {
+        const response = await updateRemoteQuantity(session.access_token, itemId, newQuantity);
+        setCartItems(response.items || []);
+        window.dispatchEvent(new Event("cart-updated"));
+      } catch (error) {
+        console.error("Failed to update cart quantity:", error);
+      }
       return;
     }
 
@@ -47,7 +81,18 @@ const Cart = () => {
     );
   };
 
-  const removeItem = (itemId) => {
+  const removeItem = async (itemId) => {
+    if (user?.id && session?.access_token) {
+      try {
+        const response = await removeRemoteCartItem(session.access_token, itemId);
+        setCartItems(response.items || []);
+        window.dispatchEvent(new Event("cart-updated"));
+      } catch (error) {
+        console.error("Failed to remove cart item:", error);
+      }
+      return;
+    }
+
     setCartItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
@@ -61,11 +106,18 @@ const Cart = () => {
         <h1 className="cart-title">Your Cart</h1>
       </header>
 
-      {!hasItems ? (
+      {loading && (
+        <section className="cart-empty-state">
+          <p>Loading cart...</p>
+        </section>
+      )}
+
+      {!loading && !hasItems ? (
         <section className="cart-empty-state">
           <p>Your cart is empty! Go start shopping and start your journey!</p>
         </section>
       ) : (
+        !loading && (
         <div className="cart-layout">
           <section className="cart-items-panel">
             {cartItems.map((item) => (
@@ -136,6 +188,7 @@ const Cart = () => {
             </button>
           </aside>
         </div>
+        )
       )}
     </main>
   );

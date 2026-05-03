@@ -8,12 +8,14 @@ function getErrorMessage(payload, fallbackMessage) {
 }
 
 async function request(path, options = {}) {
+  const mergedHeaders = {
+    "Content-Type": "application/json",
+    ...(options.headers ?? {}),
+  };
+
   const response = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers ?? {}),
-    },
     ...options,
+    headers: mergedHeaders,
   });
 
   let payload = null;
@@ -64,5 +66,64 @@ export async function getCurrentUser(accessToken) {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+  });
+}
+
+export async function getProfile(accessToken) {
+  return request("/api/profile", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+
+export async function updateNickname({ accessToken, nickname }) {
+  return request("/api/profile/nickname", {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ nickname }),
+  });
+}
+
+export async function uploadAvatar({ accessToken, avatarDataUrl }) {
+  return request("/api/profile/avatar", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ avatarDataUrl }),
+  });
+}
+
+export async function updateEmail({ accessToken, email }) {
+  return request("/api/profile/email", {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function updatePassword({ accessToken, password }) {
+  return request("/api/profile/password", {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ password }),
+  });
+}
+
+export async function deleteAccount({ accessToken, confirmationText }) {
+  return request("/api/profile/delete-account", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ confirmationText }),
   });
 }

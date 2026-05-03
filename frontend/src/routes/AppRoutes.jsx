@@ -7,6 +7,7 @@ import Store from "../pages/Store";
 import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import GameDetailPage from "../pages/GameDetailPage.jsx";
+import Profile from "../pages/Profile.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 function AppRoutes() {
@@ -26,6 +27,14 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/game/:steamId" element={<GameDetailPage />} />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute redirectTo="/login">
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

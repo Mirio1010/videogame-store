@@ -1,0 +1,219 @@
+.profile-page {
+  min-height: calc(100vh - 72px);
+  padding: 2rem 1rem 3rem;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(102, 192, 244, 0.14), transparent 42%),
+    radial-gradient(circle at 88% 82%, rgba(76, 175, 80, 0.13), transparent 45%),
+    linear-gradient(160deg, #121e2c 0%, #0e1824 50%, #101927 100%);
+}
+
+.profile-panel {
+  width: min(860px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.profile-header {
+  margin-bottom: 0.35rem;
+}
+
+.profile-header h1 {
+  font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+  letter-spacing: 0.02em;
+}
+
+.profile-header p {
+  color: var(--color-text-secondary);
+}
+
+.profile-card {
+  background: rgba(23, 37, 54, 0.92);
+  border: 1px solid rgba(102, 192, 244, 0.24);
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.22);
+}
+
+.profile-card h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.7rem;
+}
+
+.profile-form {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.profile-form input,
+.delete-modal input {
+  flex: 1 1 250px;
+  padding: 0.65rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid rgba(102, 192, 244, 0.28);
+  background: #0f1926;
+  color: var(--color-text-primary);
+}
+
+.profile-form button,
+.file-upload-button,
+.danger-button,
+.delete-modal button {
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  color: var(--color-text-white);
+  background: linear-gradient(120deg, #2c6b8f, #3e97c8);
+  border: 0;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.profile-form button:disabled,
+.file-upload-button:disabled,
+.danger-button:disabled,
+.delete-modal button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.profile-form button:hover:not(:disabled),
+.file-upload-button:hover,
+.danger-button:hover:not(:disabled),
+.delete-modal button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.avatar-preview {
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid rgba(102, 192, 244, 0.7);
+  background: #1f3042;
+  display: grid;
+  place-items: center;
+  color: #d9effd;
+  font-weight: 700;
+  font-size: 1.75rem;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.file-upload-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.file-upload-button input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.profile-help {
+  margin-top: 0.7rem;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.profile-message {
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  font-weight: 600;
+}
+
+.profile-message.success {
+  background: rgba(76, 175, 80, 0.14);
+  border: 1px solid rgba(76, 175, 80, 0.5);
+  color: #c9f3cb;
+}
+
+.profile-message.error {
+  background: rgba(244, 67, 54, 0.14);
+  border: 1px solid rgba(244, 67, 54, 0.55);
+  color: #ffcecb;
+}
+
+.danger-zone {
+  border-color: rgba(244, 67, 54, 0.45);
+}
+
+.danger-button {
+  background: linear-gradient(120deg, #8c2f28, #c54339);
+}
+
+.delete-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 10, 18, 0.82);
+  display: grid;
+  place-items: center;
+  z-index: 3000;
+  padding: 1rem;
+}
+
+.delete-modal {
+  width: min(520px, 100%);
+  background: #162535;
+  border: 1px solid rgba(244, 67, 54, 0.45);
+  border-radius: 14px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.delete-phrase {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background: #0d1723;
+  border: 1px dashed rgba(102, 192, 244, 0.6);
+  border-radius: 8px;
+  padding: 0.55rem;
+  color: #dceef8;
+}
+
+.delete-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.delete-modal button.secondary {
+  background: #32485f;
+}
+
+@media (max-width: 640px) {
+  .profile-page {
+    padding: 1.2rem 0.8rem 2rem;
+  }
+
+  .profile-form {
+    flex-direction: column;
+  }
+
+  .profile-form button {
+    width: 100%;
+  }
+
+  .delete-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .delete-modal-actions button {
+    width: 100%;
+  }
+}

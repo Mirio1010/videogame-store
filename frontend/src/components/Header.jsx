@@ -1,43 +1,55 @@
-import { Link, useNavigate,useLocation,useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import Button from "./Button/Button";
 import { useAuth } from "../context/AuthContext.jsx";
 import { readCart } from "../utils/cartStorage";
+import { fetchCart as fetchRemoteCart } from "../services/cartService";
 import "../styles/websiteLogo.css";
 
 const Header = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, session, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location=useLocation();
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [cartCount, setCartCount] = useState(0);
+  const displayName =
+    user?.displayName ||
+    user?.userMetadata?.nickname ||
+    user?.userMetadata?.name ||
+    user?.email ||
+    "User";
 
-  const getCartCount = () => {
-    const cart = readCart(user);
-    return cart.length;
-  };
+  const syncCartCount = useCallback(async () => {
+    try {
+      if (user?.id && session?.access_token) {
+        const response = await fetchRemoteCart(session.access_token);
+        setCartCount(response.items?.length || 0);
+        return;
+      }
+
+      const cart = readCart(user);
+      setCartCount(cart.length);
+    } catch (error) {
+      console.error("Failed to sync cart count:", error);
+    }
+  }, [session, user]);
 
   useEffect(() => {
-    const syncCartCount = () => {
-      setCartCount(getCartCount());
+    const handleCartSync = () => {
+      void syncCartCount();
     };
 
-    syncCartCount();
-    window.addEventListener("storage", syncCartCount);
-    window.addEventListener("cart-updated", syncCartCount);
+    const initialSyncTimer = window.setTimeout(handleCartSync, 0);
+    window.addEventListener("storage", handleCartSync);
+    window.addEventListener("cart-updated", handleCartSync);
 
     return () => {
-      window.removeEventListener("storage", syncCartCount);
-      window.removeEventListener("cart-updated", syncCartCount);
+      window.clearTimeout(initialSyncTimer);
+      window.removeEventListener("storage", handleCartSync);
+      window.removeEventListener("cart-updated", handleCartSync);
     };
-  }, [user]);
-
-  useEffect(()=>{
-    if(location.pathname==="/store"){
-      setSearch(searchParams.get("q") ?? "");
-    }
-  }, [location.pathname, searchParams]);
+  }, [syncCartCount]);
 
   const handleLogin = () => {
     navigate("/login");
@@ -59,13 +71,13 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     // Implement search logic or navigation here
-    const trimmed=search.trim();
-    const params=new URLSearchParams();
+    const trimmed = search.trim();
+    const params = new URLSearchParams();
     if (location.pathname === "/store" && searchParams.get("onSale") === "true") {
-      params.set("onSale","true");
+      params.set("onSale", "true");
     }
-    if(trimmed) params.set("q",trimmed);
-    const qs=params.toString();
+    if (trimmed) params.set("q", trimmed);
+    const qs = params.toString();
     navigate({ pathname: "/store", search: qs ? `?${qs}` : "" });
   };
 
@@ -164,9 +176,48 @@ const Header = () => {
         </Button>
         {isAuthenticated ? (
           <>
-            <span style={{ color: "var(--color-text-primary)" }}>
-              {user.email}
-            </span>
+            <Link
+              to="/profile"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                color: "var(--color-text-primary)",
+                textDecoration: "none",
+              }}
+            >
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt="Profile avatar"
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    border: "1px solid rgba(102,192,244,0.7)",
+                  }}
+                />
+              ) : (
+                <span
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    display: "inline-grid",
+                    placeItems: "center",
+                    background: "var(--color-bg-medium)",
+                    color: "var(--color-primary-light)",
+                    fontWeight: 700,
+                  }}
+                >
+                  {displayName.slice(0, 1).toUpperCase()}
+                </span>
+              )}
+              <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis" }}>
+                {displayName}
+              </span>
+            </Link>
             <Button variant="secondary" onClick={handleLogout}>
               Logout
             </Button>

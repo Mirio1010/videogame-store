@@ -17,14 +17,20 @@ function sanitizeUser(user) {
     return null;
   }
 
+  const userMetadata = user.user_metadata ?? {};
+  const displayName =
+    userMetadata.nickname || userMetadata.name || user.email?.split("@")[0] || "user";
+
   return {
     id: user.id,
     email: user.email,
     role: getUserRole(user),
+    displayName,
+    avatarUrl: userMetadata.avatar_url ?? null,
     emailConfirmedAt: user.email_confirmed_at,
     lastSignInAt: user.last_sign_in_at,
     createdAt: user.created_at,
-    userMetadata: user.user_metadata ?? {},
+    userMetadata,
     appMetadata: user.app_metadata ?? {},
   };
 }
