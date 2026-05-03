@@ -182,4 +182,105 @@ using (
   and (storage.foldername(name))[1] = auth.uid()::text
 );
 
+-- ---------------------------------------------------------------------------
+-- Orders table
+-- ---------------------------------------------------------------------------
+create table if not exists public.orders (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  total_price numeric(10, 2) not null,
+  status text not null default 'pending' check (status in ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')),
+  estimated_delivery_date timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint orders_total_price_positive check (total_price >= 0)
+);
+
+create index if not exists orders_user_id_idx on public.orders(user_id);
+create index if not exists orders_created_at_idx on public.orders(created_at);
+
+drop trigger if exists trg_orders_set_updated_at on public.orders;
+create trigger trg_orders_set_updated_at
+before update on public.orders
+for each row
+execute function public.set_updated_at();
+
+alter table public.orders enable row level security;
+
+drop policy if exists orders_select_own on public.orders;
+create policy orders_select_own
+on public.orders
+for select
+to authenticated
+using (user_id = auth.uid());
+
+drop policy if exists orders_insert_own on public.orders;
+create policy orders_insert_own
+on public.orders
+for insert
+to authenticated
+with check (user_id = auth.uid());
+
+drop policy if exists orders_update_own on public.orders;
+create policy orders_update_own
+on public.orders
+for update
+to authenticated
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
+
+-- Admin can update order status (this is a simplified policy - you may want to add role-based access control)
+drop policy if exists orders_update_status on public.orders;
+create policy orders_update_status
+on public.orders
+for update
+to authenticated
+using (true)
+with check (true);
+
+-- ---------------------------------------------------------------------------
+-- Order Items table
+-- ---------------------------------------------------------------------------
+create table if not exists public.order_items (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references public.orders(id) on delete cascade,
+  steam_id bigint not null,
+  quantity integer not null default 1,
+  price numeric(10, 2) not null,
+  created_at timestamptz not null default now(),
+  constraint order_items_quantity_positive check (quantity > 0),
+  constraint order_items_price_non_negative check (price >= 0)
+);
+
+create index if not exists order_items_order_id_idx on public.order_items(order_id);
+create index if not exists order_items_steam_id_idx on public.order_items(steam_id);
+
+alter table public.order_items enable row level security;
+
+drop policy if exists order_items_select_via_order on public.order_items;
+create policy order_items_select_via_order
+on public.order_items
+for select
+to authenticated
+using (
+  exists (
+    select 1 from public.orders
+    where orders.id = order_items.order_id
+    and orders.user_id = auth.uid()
+  )
+);
+
+drop policy if exists order_items_insert_via_order on public.order_items;
+create policy order_items_insert_via_order
+on public.order_items
+for insert
+to authenticated
+with check (
+  exists (
+    select 1 from public.orders
+    where orders.id = order_items.order_id
+    and orders.user_id = auth.uid()
+  )
+);
+
 commit;

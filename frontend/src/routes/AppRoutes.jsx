@@ -8,6 +8,8 @@ import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import GameDetailPage from "../pages/GameDetailPage.jsx";
 import Profile from "../pages/Profile.jsx";
+import OrderConfirmation from "../pages/OrderConfirmation.jsx";
+import OrderHistory from "../pages/OrderHistory.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 function AppRoutes() {
@@ -32,6 +34,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute redirectTo="/login">
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/order-confirmation/:orderId"
+        element={
+          <ProtectedRoute redirectTo="/login">
+            <OrderConfirmation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute redirectTo="/login">
+            <OrderHistory />
           </ProtectedRoute>
         }
       />
