@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "steamId": 1808500,
+    "price": 0.01,
+    "originalPrice": 0.01,
+    "discount": 0,
+    "featured": true,
+    "active": true,
+    "updatedAt": "2026-05-03T21:10:45.896Z",
+    "createdAt": "2026-05-03T21:10:45.896Z"
+  }
+]
