@@ -65,3 +65,52 @@ export async function fetchGameById(steamId) {
   const data = await res.json();
   return data.game;
 }
+
+export async function fetchAdminGames() {
+  const res = await fetch(`${API_BASE}/api/admin/games`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch admin games (${res.status})`);
+  }
+  const data = await res.json();
+  return data.games;
+}
+
+export async function createAdminGame(game) {
+  const res = await fetch(`${API_BASE}/api/admin/games`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(game),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || `Failed to create game (${res.status})`);
+  }
+  return data.game;
+}
+
+export async function updateAdminGame(steamId, game) {
+  const res = await fetch(`${API_BASE}/api/admin/games/${steamId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(game),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || `Failed to update game (${res.status})`);
+  }
+  return data.game;
+}
+
+export async function deleteAdminGame(steamId) {
+  const res = await fetch(`${API_BASE}/api/admin/games/${steamId}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || `Failed to delete game (${res.status})`);
+  }
+  return data;
+}

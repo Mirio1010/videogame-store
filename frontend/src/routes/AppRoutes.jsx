@@ -10,6 +10,7 @@ import GameDetailPage from "../pages/GameDetailPage.jsx";
 import Profile from "../pages/Profile.jsx";
 import OrderConfirmation from "../pages/OrderConfirmation.jsx";
 import OrderHistory from "../pages/OrderHistory.jsx";
+import Admin from "../pages/Admin.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 function AppRoutes() {
@@ -50,6 +51,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute redirectTo="/login">
             <OrderHistory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute redirectTo="/login">
+            <Admin />
           </ProtectedRoute>
         }
       />

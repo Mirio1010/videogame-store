@@ -1,6 +1,10 @@
 "use strict";
 
 const STEAM_STORE_API = "https://store.steampowered.com/api";
+const {
+  applyAdminOverrides,
+  getActiveAdminGames,
+} = require("./adminCatalogService");
 
 // Cache TTL: 1 hour — Steam prices / data rarely change faster than this
 const CACHE_TTL_MS = 60 * 60 * 1000;
@@ -128,12 +132,25 @@ async function fetchAppDetails(steamId) {
  * breaks the whole page.
  */
 async function getAllGames() {
-  const results = await Promise.allSettled(
-    GAME_CATALOG.map(({ steamId }) => fetchAppDetails(steamId))
+  const adminGames = getActiveAdminGames();
+  const adminBySteamId = new Map(
+    adminGames.map((game) => [game.steamId, game])
   );
+  const steamIds = [
+    ...new Set([
+      ...GAME_CATALOG.map(({ steamId }) => steamId),
+      ...adminGames.map(({ steamId }) => steamId),
+    ]),
+  ];
+
+  const results = await Promise.allSettled(
+    steamIds.map((steamId) => fetchAppDetails(steamId))
+  );
+
   return results
     .filter((r) => r.status === "fulfilled" && r.value !== null)
-    .map((r) => r.value);
+    .map((r) => applyAdminOverrides(r.value, adminBySteamId.get(r.value.id)))
+    .filter((game) => game.active !== false);
 }
 
 module.exports = { fetchAppDetails, getAllGames };

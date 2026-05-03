@@ -89,7 +89,7 @@
 
 .section-title {
   font-size: 1.5rem;
-  color: var("--color-text-white");
+  color: var(--color-text-white);
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);

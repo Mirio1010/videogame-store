@@ -179,6 +179,11 @@ const Header = () => {
             My Orders
           </Button>
         )}
+        {isAuthenticated && (
+          <Button variant="secondary" onClick={() => navigate("/admin")}>
+            Admin
+          </Button>
+        )}
         {isAuthenticated ? (
           <>
             <Link

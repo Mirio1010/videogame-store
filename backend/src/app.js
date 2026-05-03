@@ -6,6 +6,7 @@ const cartRouter = require("./routes/cart");
 const ordersRouter = require("./routes/orders");
 const gamesRouter = require("./routes/games");
 const categoriesRouter = require("./routes/categories");
+const adminGamesRouter = require("./routes/adminGames");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/games", gamesRouter);
 app.use("/api/categories", categoriesRouter);
+app.use("/api/admin", adminGamesRouter);
 
 // Global error handler
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
