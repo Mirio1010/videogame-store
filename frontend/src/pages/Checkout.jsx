@@ -4,11 +4,13 @@ import { useAuth } from "../context/AuthContext.jsx";
 import "../styles/CheckoutPage.css";
 import { readCart, writeCart } from "../utils/cartStorage";
 import { clearCart as clearRemoteCart, fetchCart as fetchRemoteCart } from "../services/cartService";
+import { createOrder } from "../services/orderService";
 
 const TAX_RATE = 0.08875; // example 8.875%
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [customerInfo, setCustomerInfo] = useState({
     fullName: "",
     email: "",
@@ -82,33 +84,33 @@ const Checkout = () => {
       return;
     }
 
-    const orderData = {
-      customer: customerInfo,
-      items: cartItems,
-      subtotal,
-      tax,
-      total,
-      createdAt: new Date().toISOString(),
-    };
+    setLoading(true);
 
-    console.log("Order placed:", orderData);
+    try {
+      // Create order via API
+      const order = await createOrder(session.access_token);
 
-    if (user?.id && session?.access_token) {
-      try {
-        await clearRemoteCart(session.access_token);
-      } catch (error) {
-        console.error("Failed to clear remote cart:", error);
+      // Clear local cart
+      if (user?.id && session?.access_token) {
+        try {
+          await clearRemoteCart(session.access_token);
+        } catch (error) {
+          console.error("Failed to clear remote cart:", error);
+        }
+      } else {
+        writeCart(user, []);
       }
-    } else {
-      writeCart(user, []);
+
+      setCartItems([]);
+      window.dispatchEvent(new Event("cart-updated"));
+
+      // Redirect to order confirmation page with order data
+      navigate(`/order-confirmation/${order.id}`, { state: { order } });
+    } catch (error) {
+      console.error("Failed to place order:", error);
+      alert(error.message || "Failed to place order. Please try again.");
+      setLoading(false);
     }
-
-    setCartItems([]);
-    window.dispatchEvent(new Event("cart-updated"));
-
-    alert("Order placed successfully!");
-
-    navigate("/");
   };
 
   if (cartItems.length === 0) {
@@ -195,8 +197,8 @@ const Checkout = () => {
             />
           </div>
 
-          <button className="checkout-primary-btn" type="submit">
-            Place Order
+          <button className="checkout-primary-btn" type="submit" disabled={loading}>
+            {loading ? "Processing..." : "Place Order"}
           </button>
         </form>
 

@@ -174,6 +174,11 @@ const Header = () => {
           </span>{" "}
           Cart
         </Button>
+        {isAuthenticated && (
+          <Button variant="secondary" onClick={() => navigate("/orders")}>
+            My Orders
+          </Button>
+        )}
         {isAuthenticated ? (
           <>
             <Link
