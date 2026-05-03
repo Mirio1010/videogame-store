@@ -3,12 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { fetchGameById } from "../services/gamesService";
 import { useAuth } from "../context/AuthContext.jsx";
 import { addGameToCart } from "../utils/cartStorage";
+import { addCartItem as addRemoteCartItem } from "../services/cartService";
 import "../styles/GameDetailPage.css";
 
 export default function GameDetailPage() {
   const { steamId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,19 +17,36 @@ export default function GameDetailPage() {
   const [addedMsg, setAddedMsg] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    fetchGameById(Number(steamId))
-      .then(setGame)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    const fetchGame = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const gameData = await fetchGameById(Number(steamId));
+        setGame(gameData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGame();
   }, [steamId]);
 
-  const handleAddToCart = () => {
-    addGameToCart(user, game);
-    window.dispatchEvent(new Event("cart-updated"));
-    setAddedMsg(true);
-    setTimeout(() => setAddedMsg(false), 1800);
+  const handleAddToCart = async () => {
+    try {
+      if (user?.id && session?.access_token) {
+        await addRemoteCartItem(session.access_token, game.id, 1);
+      } else {
+        addGameToCart(user, game);
+      }
+
+      window.dispatchEvent(new Event("cart-updated"));
+      setAddedMsg(true);
+      setTimeout(() => setAddedMsg(false), 1800);
+    } catch (err) {
+      setError(err.message || "Failed to add game to cart");
+    }
   };
 
   if (loading) return <div className="gdp-state">Loading game details…</div>;

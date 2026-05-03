@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { addGameToCart } from "../utils/cartStorage";
+import { addCartItem as addRemoteCartItem } from "../services/cartService";
 
 const GameCard = ({ game }) => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [showAddedMessage, setShowAddedMessage] = useState(false);
   const discountValue = Number(game.discount) || 0;
 
@@ -19,10 +20,19 @@ const GameCard = ({ game }) => {
     return () => clearTimeout(timeoutId);
   }, [showAddedMessage]);
 
-  const addToCart = () => {
-    addGameToCart(user, game);
-    window.dispatchEvent(new Event("cart-updated"));
-    setShowAddedMessage(true);
+  const addToCart = async () => {
+    try {
+      if (user?.id && session?.access_token) {
+        await addRemoteCartItem(session.access_token, game.id, 1);
+      } else {
+        addGameToCart(user, game);
+      }
+
+      window.dispatchEvent(new Event("cart-updated"));
+      setShowAddedMessage(true);
+    } catch (error) {
+      console.error("Failed to add game to cart:", error);
+    }
   };
 
   return (

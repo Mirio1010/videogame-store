@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import "../styles/CheckoutPage.css";
 import { readCart, writeCart } from "../utils/cartStorage";
+import { clearCart as clearRemoteCart, fetchCart as fetchRemoteCart } from "../services/cartService";
 
 const TAX_RATE = 0.08875; // example 8.875%
 
@@ -18,11 +19,26 @@ const Checkout = () => {
   });
 
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
 
   useEffect(() => {
-    setCartItems(readCart(user));
-  }, [user]);
+    async function loadCart() {
+      try {
+        if (user?.id && session?.access_token) {
+          const response = await fetchRemoteCart(session.access_token);
+          setCartItems(response.items || []);
+          return;
+        }
+
+        setCartItems(readCart(user));
+      } catch (error) {
+        console.error("Failed to load cart during checkout:", error);
+        setCartItems([]);
+      }
+    }
+
+    loadCart();
+  }, [session, user]);
 
   const subtotal = useMemo(() => {
     return cartItems.reduce((sum, item) => {
@@ -46,7 +62,7 @@ const Checkout = () => {
     }));
   };
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
     if (cartItems.length === 0) {
@@ -77,7 +93,16 @@ const Checkout = () => {
 
     console.log("Order placed:", orderData);
 
-    writeCart(user, []);
+    if (user?.id && session?.access_token) {
+      try {
+        await clearRemoteCart(session.access_token);
+      } catch (error) {
+        console.error("Failed to clear remote cart:", error);
+      }
+    } else {
+      writeCart(user, []);
+    }
+
     setCartItems([]);
     window.dispatchEvent(new Event("cart-updated"));
 

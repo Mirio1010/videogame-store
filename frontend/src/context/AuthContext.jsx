@@ -1,9 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
+  deleteAccount as deleteAccountRequest,
   getCurrentUser,
   login as loginRequest,
   logout as logoutRequest,
   register as registerRequest,
+  updateEmail as updateEmailRequest,
+  updateNickname as updateNicknameRequest,
+  updatePassword as updatePasswordRequest,
+  uploadAvatar as uploadAvatarRequest,
 } from "../services/authService";
 
 const AUTH_STORAGE_KEY = "auth_session";
@@ -48,6 +53,16 @@ export function AuthProvider({ children }) {
     const response = await getCurrentUser(accessToken);
     return response.user;
   }, []);
+
+  const refreshCurrentUser = useCallback(async () => {
+    if (!session?.access_token) {
+      return null;
+    }
+
+    const currentUser = await refreshUser(session.access_token);
+    setUser(currentUser);
+    return currentUser;
+  }, [refreshUser, session]);
 
   useEffect(() => {
     async function restore() {
@@ -111,6 +126,91 @@ export function AuthProvider({ children }) {
     }
   }, [clearAuthState, session]);
 
+  const updateNickname = useCallback(
+    async (nickname) => {
+      if (!session?.access_token) {
+        throw new Error("You must be logged in to update nickname");
+      }
+
+      const response = await updateNicknameRequest({
+        accessToken: session.access_token,
+        nickname,
+      });
+      if (response?.user) {
+        setUser(response.user);
+      }
+      return response;
+    },
+    [session]
+  );
+
+  const updateAvatar = useCallback(
+    async (avatarDataUrl) => {
+      if (!session?.access_token) {
+        throw new Error("You must be logged in to update avatar");
+      }
+
+      const response = await uploadAvatarRequest({
+        accessToken: session.access_token,
+        avatarDataUrl,
+      });
+      if (response?.user) {
+        setUser(response.user);
+      }
+      return response;
+    },
+    [session]
+  );
+
+  const updateEmail = useCallback(
+    async (email) => {
+      if (!session?.access_token) {
+        throw new Error("You must be logged in to update email");
+      }
+
+      const response = await updateEmailRequest({
+        accessToken: session.access_token,
+        email,
+      });
+      if (response?.user) {
+        setUser(response.user);
+      }
+      return response;
+    },
+    [session]
+  );
+
+  const updatePassword = useCallback(
+    async (password) => {
+      if (!session?.access_token) {
+        throw new Error("You must be logged in to update password");
+      }
+
+      return updatePasswordRequest({
+        accessToken: session.access_token,
+        password,
+      });
+    },
+    [session]
+  );
+
+  const deleteMyAccount = useCallback(
+    async (confirmationText) => {
+      if (!session?.access_token) {
+        throw new Error("You must be logged in to delete account");
+      }
+
+      const response = await deleteAccountRequest({
+        accessToken: session.access_token,
+        confirmationText,
+      });
+
+      clearAuthState();
+      return response;
+    },
+    [clearAuthState, session]
+  );
+
   const value = useMemo(
     () => ({
       user,
@@ -120,8 +220,27 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      refreshCurrentUser,
+      updateNickname,
+      updateAvatar,
+      updateEmail,
+      updatePassword,
+      deleteMyAccount,
     }),
-    [user, session, loading, login, register, logout]
+    [
+      user,
+      session,
+      loading,
+      login,
+      register,
+      logout,
+      refreshCurrentUser,
+      updateNickname,
+      updateAvatar,
+      updateEmail,
+      updatePassword,
+      deleteMyAccount,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
