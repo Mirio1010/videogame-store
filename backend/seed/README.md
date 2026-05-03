@@ -4,6 +4,8 @@ This folder contains scripts to populate your Supabase database with realistic t
 
 ## Files
 
+- **`003_admin_games.sql`** - Admin-managed product catalog table and starter games
+
 - **`001_init_supabase.sql`** — Schema initialization (tables, RLS policies, storage bucket)
 - **`002_populate_data.sql`** — SQL-only seed for test data (if users already exist)
 - **`seed.js`** — Node.js script to create test users and populate all data
@@ -51,10 +53,11 @@ node seed/seed.js
 3. Click **+ New Query**
 4. Copy contents of `001_init_supabase.sql` (schema)
 5. Run the query
-6. Create test users manually via **Authentication** → **Add User**
-7. Copy their user IDs
-8. Edit `002_populate_data.sql` and replace the hardcoded UUIDs with real user IDs
-9. Run `002_populate_data.sql`
+6. Copy contents of `003_admin_games.sql` and run it to create the shared admin catalog
+7. Create test users manually via **Authentication** → **Add User**
+8. Copy their user IDs
+9. Edit `002_populate_data.sql` and replace the hardcoded UUIDs with real user IDs
+10. Run `002_populate_data.sql`
 
 ---
 
