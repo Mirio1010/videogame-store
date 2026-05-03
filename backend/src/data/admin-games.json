@@ -8,5 +8,15 @@
     "active": true,
     "updatedAt": "2026-05-03T21:10:45.896Z",
     "createdAt": "2026-05-03T21:10:45.896Z"
+  },
+  {
+    "steamId": 2050650,
+    "price": 60,
+    "originalPrice": 60,
+    "discount": 50,
+    "featured": true,
+    "active": true,
+    "updatedAt": "2026-05-03T21:19:31.378Z",
+    "createdAt": "2026-05-03T21:19:31.378Z"
   }
 ]
