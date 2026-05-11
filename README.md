@@ -4,6 +4,8 @@ A full-stack e-commerce web application for buying physical video games, built f
 
 Users can browse products, view details, create accounts, log in, manage a shopping cart, and complete a simulated checkout experience.
 
+Team members: 	Miguel Ortega, Yuchen Jiang, Celia Cen Huang, Lejla Lukacevic, Almina Tsedenova.
+
 ## Tech Stack
 
 ### Frontend
@@ -16,7 +18,7 @@ Users can browse products, view details, create accounts, log in, manage a shopp
 - Express
 
 ### Database
-- To be decided / added during backend setup
+- Supabase, PostgreSQL
 
 ---
 
