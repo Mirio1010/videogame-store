@@ -11,7 +11,7 @@ import AuthError from "../components/Auth/AuthError";
 import RegisterForm from "../components/Auth/RegisterForm";
 import AuthInfo from "../components/Auth/AuthInfo";
 import { useAuth } from "../context/AuthContext.jsx";
-import "../Styles/AuthPages.css";
+import "../styles/AuthPages.css";
 
 function RegisterPage() {
   const navigate = useNavigate();
