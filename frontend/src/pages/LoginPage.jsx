@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button/Button';
 import { useAuth } from '../context/AuthContext.jsx';
-import '../Styles/AuthPages.css';
+import '../styles/AuthPages.css';
 
 function LoginPage() {
   const navigate = useNavigate();
