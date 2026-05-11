@@ -1,6 +1,7 @@
 /* HomePage Styles */
 
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mozilla+Text:wght@200..700&display=swap');
 
 .home-page {
   display: flex;
@@ -13,6 +14,7 @@
   background: var(--gradient-card);
   padding: var(--spacing-2xl) 0;
   text-align: center;
+  overflow: visible;
 }
 
 .hero-content {
@@ -115,7 +117,7 @@
 .game-card {
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.02);
+  background: linear-gradient( #0b1111 0%, #14213d 100%);
   border: 1px solid rgba(102, 192, 244, 0.08);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -124,7 +126,8 @@
 
 .game-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(102, 192, 244, 0.28);
+  border-color: rgba(34, 133, 240, 0.28);
+  border-width: 2px;
   box-shadow: var(--shadow-md);
 }
 
@@ -168,10 +171,13 @@
 }
 
 .game-card-info {
-  padding: var(--spacing-sm) 0;
+  padding: var(--spacing-sm) 0.55rem 0.45rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(#0b1111 0%, #14213d 100%);
 }
 
 .game-card-info h3 {
+  font-family: 'Mozilla Text', serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--color-text-white);
@@ -182,36 +188,80 @@
   margin-top: var(--spacing-xs);
   margin-bottom: 0;
   color: var(--color-text-primary);
+  font-family: 'mozilla text', serif;
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .game-card-add-btn {
-  margin-top: var(--spacing-sm);
-  width: 100%;
-  background: linear-gradient(180deg, #7ec9f7 0%, #57b0e8 100%);
+  position: relative;
+  overflow: hidden;
+  margin: 0 0.55rem 0.6rem;
+  width: calc(100% - 1.1rem);
+  background: linear-gradient(
+    135deg,
+    #ffb733 0%,
+    #fca311 45%,
+    #e89100 100%
+  );
   color: #0d1117;
-  border: 1px solid rgba(13, 17, 23, 0.35);
+  border: 1px solid rgba(252, 163, 17, 0.65);
   border-radius: var(--radius-sm);
   padding: 0.55rem 0.8rem;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.01em;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(252, 163, 17, 0.22);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.game-card-add-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
 }
 
 .game-card-add-btn:hover {
-  background: linear-gradient(180deg, #99d7fa 0%, #67bcec 100%);
-  box-shadow: 0 4px 10px rgba(102, 192, 244, 0.35);
+  border-color: rgba(252, 163, 17, 0.9);
+  box-shadow: 0 8px 20px rgba(252, 163, 17, 0.35);
   transform: translateY(-1px);
+}
+
+.game-card-add-btn:hover::before {
+  animation: shine-sweep 0.7s ease forwards;
 }
 
 .game-card-add-btn:active {
   transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(252, 163, 17, 0.25);
+}
+
+@keyframes shine-sweep {
+  from {
+    left: -80%;
+  }
+
+  to {
+    left: 130%;
+  }
 }
 
 .game-card-added-msg {
-  margin-top: var(--spacing-sm);
+  margin: 0 0.55rem 0.65rem;
   margin-bottom: 0;
   color: #9be77a;
   font-size: 0.9rem;
@@ -235,40 +285,78 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-lg);
-  background: var(--color-bg-medium);
+
+  background: #14213d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
+
   text-decoration: none;
-  transition: all var(--transition-fast);
-  border: 1px solid var(--color-bg-light);
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .category-card:hover {
-  background: var(--color-bg-light);
-  border-color: var(--color-primary);
+  background: linear-gradient(135deg, #14213d 0%, #1c2b4a 100%);
+  border-color: rgba(252, 163, 17, 0.75);
+  box-shadow: 0 8px 20px rgba(252, 163, 17, 0.18);
   transform: translateY(-2px);
   text-decoration: none;
 }
 
 .category-name {
-  color: var(--color-text-white);
-  font-weight: 600;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.category-card:hover .category-name {
+  color: #fca311;
 }
 
 /* Sale Section */
 .sale-section {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, transparent 100%);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(252, 163, 17, 0.18) 0%,
+      rgba(252, 163, 17, 0.06) 35%,
+      transparent 70%
+    ),
+    linear-gradient(
+      135deg,
+      #14213d 0%,
+      #0d1117 100%
+    );
+
+  border: 1px solid rgba(252, 163, 17, 0.22);
   border-radius: var(--radius-lg);
   padding: var(--spacing-2xl);
   margin: 0 var(--spacing-lg);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
 
 .sale-badge {
-  background: var(--color-sale);
-  color: var(--color-text-white);
+  display: inline-block;
+  background: linear-gradient(
+    135deg,
+    #ffb733 0%,
+    #fca311 55%,
+    #e89100 100%
+  );
+  color: #0d1117;
+
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-sm);
+
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+
+  border: 1px solid rgba(252, 163, 17, 0.65);
+  box-shadow: 0 4px 12px rgba(252, 163, 17, 0.25);
 }
 
 /* CTA Section */

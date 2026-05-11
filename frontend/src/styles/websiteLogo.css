@@ -1,4 +1,35 @@
+.website-logo-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+
+  /* Extra paint area for hover scale + glow */
+  padding: 18px 0 10px;
+}
+
 .website-logo {
-    height: 300px;
-    display: inline;
+  height: 300px;
+  display: inline-block;
+  overflow: visible;
+  max-width: min(100%, 560px);
+  object-fit: contain;
+  transform-origin: center center;
+  will-change: transform, filter;
+
+  filter:
+    drop-shadow(0 0 10px rgba(252, 163, 17, 0.35))
+    drop-shadow(0 0 22px rgba(102, 192, 244, 0.22));
+
+  transition:
+    transform var(--transition-fast),
+    filter var(--transition-fast);
+}
+
+.website-logo:hover {
+  transform: scale(1.045);
+
+  filter:
+    drop-shadow(0 0 14px rgba(252, 163, 17, 0.55))
+    drop-shadow(0 0 30px rgba(102, 192, 244, 0.35));
 }

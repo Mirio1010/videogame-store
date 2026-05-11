@@ -2,7 +2,9 @@ import React from "react";
 import "../styles/websiteLogo.css"
 const HeroSection = () => (
   <section className="hero-section">
-    <img className="website-logo" src="/PixelPitStopLogo.svg" alt="website logo" />
+    <div className="website-logo-wrap">
+      <img className="website-logo" src="/PixelPitStopLogo.svg" alt="website logo" />
+    </div>
     <div className="container">
       <div className="hero-content">
         <h1 className="hero-title">Welcome to Pixel Pit Stop</h1>

@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { readCart } from "../utils/cartStorage";
 import { fetchCart as fetchRemoteCart } from "../services/cartService";
 import "../styles/websiteLogo.css";
+import "../styles/Header.css";
+import { RiGameFill } from "react-icons/ri";
 
 const Header = () => {
   const { user, session, isAuthenticated, logout } = useAuth();
@@ -82,160 +84,74 @@ const Header = () => {
   };
 
   return (
-    <header
-      style={{
-        background: "var(--gradient-header)",
-        padding: "0.5rem 0",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        boxShadow: "var(--shadow-md)",
-        position: "sticky",
-        top: 0,
-        zIndex: 1000,
-      }}
-    >
-      <Link
-        to="/"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          textDecoration: "none",
-        }}
-      >
-        <span
-          className="logo-icon"
-          style={{
-            fontWeight: 700,
-            fontSize: "2rem",
-            color: "var(--color-primary)",
-            marginLeft: "10px",
-          }}
-        >
-          Pixel Pit Stop
+    <header className="site-header">
+      <Link to="/" className="site-logo">
+        <span className="site-logo-mark">
+          <RiGameFill className="site-logo-icon" />
         </span>
+        <span className="site-logo-text">Pixel Pit Stop</span>
       </Link>
-      <form
-        onSubmit={handleSearch}
-        style={{ flex: 1, maxWidth: 400, margin: "0 2rem" }}
-      >
+
+      <form onSubmit={handleSearch} className="site-search-form">
         <input
           type="text"
           placeholder="Search games..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "0.5rem 1rem",
-            borderRadius: 4,
-            border: "none",
-            fontSize: "1rem",
-            background: "var(--color-bg-medium)",
-            color: "var(--color-text-primary)",
-          }}
+          className="site-search-input"
         />
       </form>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-          marginRight: "1.5rem",
-        }}
-      >
-        <Button variant="secondary" onClick={handleCart}>
-          <span
-            role="img"
-            aria-label="cart"
-            style={{ position: "relative", display: "inline-flex" }}
-          >
+
+      <div className="site-header-actions">
+        <button className="header-cart-btn" onClick={handleCart}>
+          <span className="cart-icon-wrapper">
             <img src="/cart.png" alt="Cart" className="cart-icon" />
-            {cartCount > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: -8,
-                  right: -8,
-                  minWidth: 18,
-                  height: 18,
-                  padding: "0 5px",
-                  borderRadius: 999,
-                  background: "var(--color-error)",
-                  color: "white",
-                  fontSize: "0.7rem",
-                  fontWeight: 700,
-                  lineHeight: "18px",
-                  textAlign: "center",
-                }}
-              >
-                {cartCount}
-              </span>
-            )}
-          </span>{" "}
-          Cart
-        </Button>
+            {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+          </span>
+          <span>Cart</span>
+        </button>
+
         {isAuthenticated && (
-          <Button variant="secondary" onClick={() => navigate("/orders")}>
+          <button
+            className="header-nav-btn"
+            onClick={() => navigate("/orders")}
+          >
             My Orders
-          </Button>
+          </button>
         )}
+
         {user?.role === "admin" && (
-          <Button variant="secondary" onClick={() => navigate("/admin")}>
+          <button className="header-nav-btn" onClick={() => navigate("/admin")}>
             Admin
-          </Button>
+          </button>
         )}
+
         {isAuthenticated ? (
           <>
-            <Link
-              to="/profile"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                color: "var(--color-text-primary)",
-                textDecoration: "none",
-              }}
-            >
+            <Link to="/profile" className="profile-link">
               {user?.avatarUrl ? (
                 <img
                   src={user.avatarUrl}
                   alt="Profile avatar"
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    border: "1px solid rgba(102,192,244,0.7)",
-                  }}
+                  className="profile-avatar"
                 />
               ) : (
-                <span
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: "50%",
-                    display: "inline-grid",
-                    placeItems: "center",
-                    background: "var(--color-bg-medium)",
-                    color: "var(--color-primary-light)",
-                    fontWeight: 700,
-                  }}
-                >
+                <span className="profile-initial">
                   {displayName.slice(0, 1).toUpperCase()}
                 </span>
               )}
-              <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis" }}>
-                {displayName}
-              </span>
+
+              <span className="profile-name">{displayName}</span>
             </Link>
-            <Button variant="secondary" onClick={handleLogout}>
+
+            <button className="header-nav-btn" onClick={handleLogout}>
               Logout
-            </Button>
+            </button>
           </>
         ) : (
-          <Button variant="primary" onClick={handleLogin}>
+          <button className="header-signin-btn" onClick={handleLogin}>
             Sign In
-          </Button>
+          </button>
         )}
       </div>
     </header>
