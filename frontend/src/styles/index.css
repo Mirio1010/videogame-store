@@ -13,32 +13,30 @@
 
 /* CSS Variables for theming */
 :root {
-  /* Primary Colors */
-  --color-primary: #66c0f4;
-  --color-primary-dark: #417a9b;
-  --color-primary-light: #a3d6f5;
-  
-  /* Background Colors */
-  --color-bg-darkest: #0d1117;
-  --color-bg-dark: #1b2838;
-  --color-bg-medium: #2a475e;
-  --color-bg-light: #3d5a73;
-  
-  /* Text Colors */
-  --color-text-primary: #c7d5e0;
-  --color-text-secondary: #8f98a0;
-  --color-text-white: #ffffff;
-  
-  /* Accent Colors */
-  --color-success: #4caf50;
-  --color-sale: #4caf50;
-  --color-warning: #ff9800;
-  --color-error: #f44336;
-  
+   /* Background */
+  --color-bg-darkest: #000000;
+  --color-bg-dark: #14213d;
+  --color-bg-light: #e5e5e5;
+
+  /* Text */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e5e5e5;
+  --color-text-dark: #14213d;
+
+  /* Accent */
+  --color-primary: #fca311;
+  --color-primary-hover: #ffb733;
+
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.12);
+
   /* Gradients */
-  --gradient-header: linear-gradient(to right, #171a21, #1b2838);
-  --gradient-card: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
+  --gradient-header: linear-gradient(to right, #000000, #14213d);
+  --gradient-card: linear-gradient(135deg, #14213d 0%, #000000 100%);
   
+
+
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;

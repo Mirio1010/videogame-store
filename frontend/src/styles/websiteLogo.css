@@ -1,4 +1,20 @@
 .website-logo {
-    height: 300px;
-    display: inline;
+  height: 300px;
+  display: inline-block;
+
+  filter:
+    drop-shadow(0 0 10px rgba(252, 163, 17, 0.35))
+    drop-shadow(0 0 22px rgba(102, 192, 244, 0.22));
+
+  transition:
+    transform var(--transition-fast),
+    filter var(--transition-fast);
+}
+
+.website-logo:hover {
+  transform: translateY(-3px) scale(1.02);
+
+  filter:
+    drop-shadow(0 0 14px rgba(252, 163, 17, 0.55))
+    drop-shadow(0 0 30px rgba(102, 192, 244, 0.35));
 }
