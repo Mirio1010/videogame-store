@@ -127,10 +127,21 @@ videogame-store/
 │   ├── public/           # Static assets
 │   └── src/
 │       ├── components/   # Reusable UI pieces (buttons, cards, etc.)
+│       ├── context/      # Authentication Manager
 │       ├── pages/        # Full page views (Home, Product, Cart, etc.)
+│       ├── routes/       # Route configuration for the frontend
+│       ├── services/     # Handles communication with external services/ APIs
+│       ├── styles/       # CSS styling files used in the frontend
+│       ├── utils/        # Stores repetitively utility/helper functions 
 │       ├── App.jsx       # Root component and routing
 │       └── main.jsx      # Entry point
 ├── backend/
+|   ├──seed               # Database initialization
+|   └──src/
+│       ├── middleware/   # Security & control layer
+│       ├── routes/       # Handles HTTP requests
+│       └── services      # Business logic layer
+├── Goals/                # Keeps track of project updates
 └── README.md
 ```
 
