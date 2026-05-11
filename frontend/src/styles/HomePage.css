@@ -126,7 +126,8 @@
 
 .game-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(102, 192, 244, 0.28);
+  border-color: rgba(34, 133, 240, 0.28);
+  border-width: 2px;
   box-shadow: var(--shadow-md);
 }
 
