@@ -13,6 +13,7 @@
   background: var(--gradient-card);
   padding: var(--spacing-2xl) 0;
   text-align: center;
+  overflow: visible;
 }
 
 .hero-content {

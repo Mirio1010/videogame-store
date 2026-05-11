@@ -2,6 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  overflow: visible;
 
   display: flex;
   align-items: center;
@@ -20,6 +21,7 @@
   gap: 0.7rem;
   text-decoration: none;
   flex-shrink: 0;
+  overflow: visible;
 }
 
 .site-logo {
@@ -44,6 +46,7 @@
   box-shadow:
     0 4px 14px rgba(0, 0, 0, 0.35),
     0 0 16px rgba(252, 163, 17, 0.18);
+  overflow: visible;
 
   transition:
     transform var(--transition-fast),
@@ -59,7 +62,7 @@
 }
 
 .site-logo:hover .site-logo-mark {
-  transform: translateY(-1px);
+  transform: scale(1.03);
   border-color: rgba(252, 163, 17, 0.75);
 
   box-shadow:

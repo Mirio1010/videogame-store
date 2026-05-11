@@ -1,6 +1,21 @@
+.website-logo-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+
+  /* Extra paint area for hover scale + glow */
+  padding: 18px 0 10px;
+}
+
 .website-logo {
   height: 300px;
   display: inline-block;
+  overflow: visible;
+  max-width: min(100%, 560px);
+  object-fit: contain;
+  transform-origin: center center;
+  will-change: transform, filter;
 
   filter:
     drop-shadow(0 0 10px rgba(252, 163, 17, 0.35))
@@ -12,7 +27,7 @@
 }
 
 .website-logo:hover {
-  transform: translateY(-3px) scale(1.02);
+  transform: scale(1.045);
 
   filter:
     drop-shadow(0 0 14px rgba(252, 163, 17, 0.55))
