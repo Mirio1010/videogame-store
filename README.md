@@ -8,7 +8,7 @@ Team members: 	Miguel Ortega, Yuchen Jiang, Celia Cen Huang, Lejla Lukacevic, Al
 
 ## Live 🚀
 
-[Visit Pixel Pit Stop]([(https://pixel-pit-stop.onrender.com)])
+[Visit Pixel Pit Stop](https://pixel-pit-stop.onrender.com)
 
 ## Tech Stack
 
