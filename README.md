@@ -6,6 +6,10 @@ Users can browse products, view details, create accounts, log in, manage a shopp
 
 Team members: 	Miguel Ortega, Yuchen Jiang, Celia Cen Huang, Lejla Lukacevic, Almina Tsedenova.
 
+## Live 🚀
+
+[Visit Pixel Pit Stop](https://your-project-name.netlify.app/)
+
 ## Tech Stack
 
 ### Frontend
